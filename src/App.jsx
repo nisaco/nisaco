@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Github, Linkedin, Mail, ExternalLink, Code2, 
   Terminal, Database, Globe, Moon, Sun, Menu, X, 
-  Send, User, Briefcase, FileText, Server, Cpu, Layers, GraduationCap
+  Send, User, Briefcase, FileText, Server, Cpu, Layers, GraduationCap, Download
 } from 'lucide-react';
 
 // --- THEMES ---
@@ -36,6 +36,11 @@ export default function Portfolio() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
 
+  // Form State
+  const [formName, setFormName] = useState('');
+  const [formEmail, setFormEmail] = useState('');
+  const [formMessage, setFormMessage] = useState('');
+
   const theme = isDark ? THEMES.dark : THEMES.light;
 
   const scrollTo = (id) => {
@@ -47,6 +52,14 @@ export default function Portfolio() {
     }
   };
 
+  const handleContactSubmit = (e) => {
+    e.preventDefault();
+    // Opens default email client with pre-filled data
+    const subject = `Portfolio Inquiry from ${formName}`;
+    const body = `Name: ${formName}%0AEmail: ${formEmail}%0A%0A${formMessage}`;
+    window.location.href = `mailto:${personalInfo.email}?subject=${subject}&body=${body}`;
+  };
+
   // --- PERSONAL DATA ---
   const personalInfo = {
     name: "Jeffrey N. K. Pappoe",
@@ -54,11 +67,10 @@ export default function Portfolio() {
     tagline: "Building digital bridges for the African market.",
     bio: "I am a software engineer focused on solving real-world problems through technology. I am currently a student at the University of Cape Coast, pursuing a Bachelor of Science in Computer Science. My expertise lies in building robust Fintech and E-commerce platforms that integrate complex APIs (like Paystack and Mobile Money) with user-friendly interfaces. I am also the founder and lead developer of AJEnterprise, a data reselling platform.",
     location: "Accra, Ghana",
-    email: "jnkpappoe@gmail.com",
-    // Link your actual profile picture here (make sure it's in the public folder)
+    email: "contact@jeffreypappoe.com",
     avatar: "/profile.jpg", 
     socials: {
-      github: "https://github.com/nisaco",
+      github: "https://github.com/yourusername",
       linkedin: "https://linkedin.com/in/yourusername",
       twitter: "https://twitter.com/yourusername"
     }
@@ -68,7 +80,7 @@ export default function Portfolio() {
     { name: "React & Vite", icon: Globe, level: "Expert" },
     { name: "Node.js & Express", icon: Server, level: "Expert" },
     { name: "MongoDB & Atlas", icon: Database, level: "Advanced" },
-    { name: "Payment Integrations", icon: CreditCard => <Briefcase size={20} />, level: "Expert" },
+    { name: "Payment Integrations", icon: (props) => <Briefcase {...props} />, level: "Expert" },
     { name: "API Development", icon: Terminal, level: "Advanced" },
     { name: "UI/UX Design", icon: Layers, level: "Intermediate" },
   ];
@@ -86,20 +98,20 @@ export default function Portfolio() {
       category: "Fintech Platform",
       desc: "A fully automated data reselling platform allowing users to buy bundles and airtime. Features include an Agent reseller system, real-time wallet funding via Paystack, and an Admin dashboard for sales tracking.",
       tech: ["React", "Node.js", "MongoDB", "Paystack API"],
-      link: "https://ajenterprise-datastore.onrender.com" // Update with your actual link
+      link: "https://ajenterprise-datastore.onrender.com"
     },
     {
       title: "Corporate Logistics Hub",
       category: "Business Website",
       desc: "A corporate presence for a logistics company featuring shipment tracking, service quotation forms, and a dynamic CMS for news updates.",
-      tech: ["Next.js", "Tailwind", "Framer Motion"],
+      tech: ["Node.js", "Tailwind", "React", "Pretty"],
       link: "https://j3cube-data.onrender.com" 
     },
     {
       title: "EduTrack System",
       category: "EdTech",
-      desc: "Student management system for local tertiary to track shuttle movements around campus",
-      tech: ["Vue.js", "Firebase", "Twilio API"],
+      desc: "Student management system for local tertiaries to track shuttles on campus.",
+      tech: ["React.js", "Google Maps", "MongoDb", "Twilio API"],
       link: "https://ucc-shuttle-live-2h1i.onrender.com" 
     }
   ];
@@ -176,9 +188,11 @@ export default function Portfolio() {
             <button onClick={() => scrollTo('projects')} className={`${theme.accentBg} text-white px-8 py-3 rounded-xl font-bold hover:opacity-90 transition shadow-lg shadow-blue-500/20`}>
               View My Work
             </button>
-            <button onClick={() => scrollTo('contact')} className={`px-8 py-3 rounded-xl font-bold border ${theme.border} hover:bg-gray-100 dark:hover:bg-slate-800 transition`}>
-              Contact Me
-            </button>
+            
+            {/* Download CV Button */}
+            <a href="/resume.pdf" download className={`px-8 py-3 rounded-xl font-bold border ${theme.border} hover:bg-gray-100 dark:hover:bg-slate-800 transition flex items-center gap-2`}>
+              <Download size={18} /> Download CV
+            </a>
           </div>
           
           <div className={`flex gap-6 justify-center md:justify-start pt-8 ${theme.textSub}`}>
@@ -196,6 +210,7 @@ export default function Portfolio() {
                alt="Jeffrey Pappoe" 
                className="w-full h-full object-cover"
                onError={(e) => {
+                   // Fallback if local image not found (for preview only)
                    e.target.src = "https://api.dicebear.com/7.x/avataaars/svg?seed=Jeffrey&backgroundColor=b6e3f4"; 
                }}
              />
@@ -209,6 +224,7 @@ export default function Portfolio() {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row gap-16 items-start">
             
+            {/* Biography */}
             <div className="flex-1 space-y-6">
                 <h2 className="text-3xl font-bold flex items-center gap-3">
                     About Me <div className={`h-1 w-20 ${theme.accentBg} rounded-full`}></div>
@@ -225,6 +241,7 @@ export default function Portfolio() {
                     </p>
                 </div>
                 
+                {/* Highlighted Education Card */}
                 <div className={`mt-6 p-4 rounded-xl border ${theme.border} ${theme.card} flex items-center gap-4`}>
                     <div className={`p-3 rounded-full ${isDark ? 'bg-slate-800 text-emerald-400' : 'bg-blue-50 text-blue-600'}`}>
                         <GraduationCap size={24} />
@@ -247,6 +264,7 @@ export default function Portfolio() {
                 </div>
             </div>
 
+            {/* Skills Grid */}
             <div className="flex-1 w-full">
                 <h3 className="text-2xl font-bold mb-6">Technical Skills</h3>
                 <div className="grid grid-cols-2 gap-4">
@@ -305,6 +323,7 @@ export default function Portfolio() {
         <div className="grid md:grid-cols-3 gap-8">
           {projects.map((project, i) => (
             <div key={i} className={`${theme.card} rounded-2xl border ${theme.border} overflow-hidden hover:shadow-2xl transition-all duration-300 group`}>
+              {/* Project Mockup Placeholder */}
               <div className={`h-48 ${isDark ? 'bg-slate-800' : 'bg-gray-100'} flex items-center justify-center relative overflow-hidden`}>
                 <Code2 size={48} className={`opacity-20 ${theme.textSub}`} />
                 <div className={`absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300`}>
@@ -342,18 +361,38 @@ export default function Portfolio() {
           <p className={`mb-12 ${theme.textSub}`}>Reach out and let's discuss how I can help you build something amazing.</p>
           
           <div className={`${theme.card} p-8 rounded-3xl border ${theme.border} shadow-xl text-left max-w-xl mx-auto`}>
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleContactSubmit}>
               <div>
                 <label className={`block text-xs font-bold uppercase mb-2 ${theme.textSub}`}>Name</label>
-                <input type="text" className={`w-full p-3 rounded-xl bg-transparent border ${theme.border} focus:ring-2 focus:ring-${isDark ? 'emerald' : 'blue'}-500 outline-none transition ${theme.textMain}`} placeholder="Your name" />
+                <input 
+                  type="text" 
+                  value={formName} 
+                  onChange={(e) => setFormName(e.target.value)} 
+                  className={`w-full p-3 rounded-xl bg-transparent border ${theme.border} focus:ring-2 focus:ring-${isDark ? 'emerald' : 'blue'}-500 outline-none transition ${theme.textMain}`} 
+                  placeholder="Your name" 
+                  required 
+                />
               </div>
               <div>
                 <label className={`block text-xs font-bold uppercase mb-2 ${theme.textSub}`}>Email</label>
-                <input type="email" className={`w-full p-3 rounded-xl bg-transparent border ${theme.border} focus:ring-2 focus:ring-${isDark ? 'emerald' : 'blue'}-500 outline-none transition ${theme.textMain}`} placeholder="name@example.com" />
+                <input 
+                  type="email" 
+                  value={formEmail} 
+                  onChange={(e) => setFormEmail(e.target.value)} 
+                  className={`w-full p-3 rounded-xl bg-transparent border ${theme.border} focus:ring-2 focus:ring-${isDark ? 'emerald' : 'blue'}-500 outline-none transition ${theme.textMain}`} 
+                  placeholder="name@example.com" 
+                  required 
+                />
               </div>
               <div>
                 <label className={`block text-xs font-bold uppercase mb-2 ${theme.textSub}`}>Message</label>
-                <textarea className={`w-full p-3 rounded-xl bg-transparent border ${theme.border} focus:ring-2 focus:ring-${isDark ? 'emerald' : 'blue'}-500 outline-none transition min-h-[120px] ${theme.textMain}`} placeholder="Tell me about your project..."></textarea>
+                <textarea 
+                  value={formMessage} 
+                  onChange={(e) => setFormMessage(e.target.value)} 
+                  className={`w-full p-3 rounded-xl bg-transparent border ${theme.border} focus:ring-2 focus:ring-${isDark ? 'emerald' : 'blue'}-500 outline-none transition min-h-[120px] ${theme.textMain}`} 
+                  placeholder="Tell me about your project..." 
+                  required
+                ></textarea>
               </div>
               <button className={`w-full py-4 rounded-xl font-bold text-white ${theme.accentBg} hover:opacity-90 transition flex items-center justify-center gap-2 shadow-lg`}>
                 <Send size={18} /> Send Message
