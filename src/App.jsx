@@ -54,11 +54,11 @@ export default function Portfolio() {
     tagline: "Building digital bridges for the African market.",
     bio: "I am a software engineer focused on solving real-world problems through technology. I am currently a student at the University of Cape Coast, pursuing a Bachelor of Science in Computer Science. My expertise lies in building robust Fintech and E-commerce platforms that integrate complex APIs (like Paystack and Mobile Money) with user-friendly interfaces. I am also the founder and lead developer of AJEnterprise, a data reselling platform.",
     location: "Accra, Ghana",
-    email: "contact@jeffreypappoe.com",
+    email: "jnkpappoe@gmail.com",
     // Link your actual profile picture here (make sure it's in the public folder)
     avatar: "/profile.jpg", 
     socials: {
-      github: "https://github.com/yourusername",
+      github: "https://github.com/nisaco",
       linkedin: "https://linkedin.com/in/yourusername",
       twitter: "https://twitter.com/yourusername"
     }
@@ -93,14 +93,14 @@ export default function Portfolio() {
       category: "Business Website",
       desc: "A corporate presence for a logistics company featuring shipment tracking, service quotation forms, and a dynamic CMS for news updates.",
       tech: ["Next.js", "Tailwind", "Framer Motion"],
-      link: "#" 
+      link: "https://j3cube-data.onrender.com" 
     },
     {
       title: "EduTrack System",
       category: "EdTech",
-      desc: "Student management system for local schools to track attendance, grades, and fee payments with SMS notifications to parents.",
+      desc: "Student management system for local tertiary to track shuttle movements around campus",
       tech: ["Vue.js", "Firebase", "Twilio API"],
-      link: "#" 
+      link: "https://ucc-shuttle-live-2h1i.onrender.com" 
     }
   ];
 
@@ -114,7 +114,7 @@ export default function Portfolio() {
             <div className={`w-8 h-8 rounded-lg ${theme.accentBg} flex items-center justify-center text-white font-mono shadow-lg`}>
               JP
             </div>
-            <span>Jeffrey Pappoe</span>
+            <span>Jeffrey N.K Pappoe</span>
           </div>
 
           <div className="hidden md:flex items-center gap-8 text-sm font-medium">
