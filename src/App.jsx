@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Github, Linkedin, Mail, ExternalLink, Code2, 
   Terminal, Database, Globe, Moon, Sun, Menu, X, 
-  Send, User, Briefcase, FileText, Server, Cpu, Layers, GraduationCap, Download
+  Send, User, Briefcase, FileText, Server, Cpu, Layers, GraduationCap, Download, Twitter
 } from 'lucide-react';
 
 // --- THEMES ---
@@ -31,15 +31,10 @@ const THEMES = {
   }
 };
 
-export default function Portfolio() {
+export default function App() {
   const [isDark, setIsDark] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
-
-  // Form State
-  const [formName, setFormName] = useState('');
-  const [formEmail, setFormEmail] = useState('');
-  const [formMessage, setFormMessage] = useState('');
 
   const theme = isDark ? THEMES.dark : THEMES.light;
 
@@ -52,14 +47,6 @@ export default function Portfolio() {
     }
   };
 
-  const handleContactSubmit = (e) => {
-    e.preventDefault();
-    // Opens default email client with pre-filled data
-    const subject = `Portfolio Inquiry from ${formName}`;
-    const body = `Name: ${formName}%0AEmail: ${formEmail}%0A%0A${formMessage}`;
-    window.location.href = `mailto:${personalInfo.email}?subject=${subject}&body=${body}`;
-  };
-
   // --- PERSONAL DATA ---
   const personalInfo = {
     name: "Jeffrey N. K. Pappoe",
@@ -70,7 +57,7 @@ export default function Portfolio() {
     email: "jnkpappoe@gmail.com",
     avatar: "/profile.jpg", 
     socials: {
-      github: "https://github.com/nisaco",
+      github: "https://github.com/nisaco", 
       linkedin: "https://www.linkedin.com/in/jeffrey-nii-kpakpo-pappoe-a0997a391",
       twitter: "https://x.com/jeffrey_pa84707"
     }
@@ -105,19 +92,20 @@ export default function Portfolio() {
       category: "Business Website",
       desc: "A corporate presence for a logistics company featuring shipment tracking, service quotation forms, and a dynamic CMS for news updates.",
       tech: ["Node.js", "Tailwind", "React", "Pretty"],
-      link: "https://j3cube-data.onrender.com" 
+      link: "https://j3cube-data.onrender.com"
     },
     {
       title: "EduTrack System",
       category: "EdTech",
       desc: "Student management system for local tertiaries to track shuttles on campus.",
       tech: ["React.js", "Google Maps", "MongoDb", "Twilio API"],
-      link: "https://ucc-shuttle-live-2h1i.onrender.com" 
+      link: "https://ucc-shuttle-live-2h1i.onrender.com"
     }
   ];
 
   return (
     <div className={`min-h-screen ${theme.bg} ${theme.textMain} transition-colors duration-300 font-sans selection:bg-blue-500/30`}>
+      <style>{`html { scroll-behavior: smooth; }`}</style>
       
       {/* --- NAVBAR --- */}
       <nav className={`fixed top-0 w-full z-50 border-b ${theme.border} ${theme.navBg}`}>
@@ -188,8 +176,6 @@ export default function Portfolio() {
             <button onClick={() => scrollTo('projects')} className={`${theme.accentBg} text-white px-8 py-3 rounded-xl font-bold hover:opacity-90 transition shadow-lg shadow-blue-500/20`}>
               View My Work
             </button>
-            
-            {/* Download CV Button */}
             <a href="/resume.pdf" download className={`px-8 py-3 rounded-xl font-bold border ${theme.border} hover:bg-gray-100 dark:hover:bg-slate-800 transition flex items-center gap-2`}>
               <Download size={18} /> Download CV
             </a>
@@ -198,17 +184,19 @@ export default function Portfolio() {
           <div className={`flex gap-6 justify-center md:justify-start pt-8 ${theme.textSub}`}>
             <a href={personalInfo.socials.github} target="_blank" rel="noopener noreferrer" className="hover:text-current transition hover:scale-110 transform duration-200"><Github size={24} /></a>
             <a href={personalInfo.socials.linkedin} target="_blank" rel="noopener noreferrer" className="hover:text-current transition hover:scale-110 transform duration-200"><Linkedin size={24} /></a>
+            <a href={personalInfo.socials.twitter} target="_blank" rel="noopener noreferrer" className="hover:text-current transition hover:scale-110 transform duration-200"><Twitter size={24} /></a>
             <a href={`mailto:${personalInfo.email}`} className="hover:text-current transition hover:scale-110 transform duration-200"><Mail size={24} /></a>
           </div>
         </div>
         
-        {/* --- PROFILE PICTURE --- */}
+        {/* --- PROFILE PICTURE (UPDATED STYLE) --- */}
         <div className="flex-1 flex justify-center relative">
           <div className={`w-64 h-64 md:w-96 md:h-96 rounded-full overflow-hidden border-4 ${isDark ? 'border-slate-800' : 'border-white'} shadow-2xl relative z-10 bg-gradient-to-br from-blue-500 to-emerald-500`}>
              <img 
                src={personalInfo.avatar} 
                alt="Jeffrey Pappoe" 
-               className="w-full h-full object-cover"
+               // FIX: Added object-top to focus on the face/top of the image
+               className="w-full h-full object-cover object-top"
                onError={(e) => {
                    // Fallback if local image not found (for preview only)
                    e.target.src = "https://api.dicebear.com/7.x/avataaars/svg?seed=Jeffrey&backgroundColor=b6e3f4"; 
@@ -241,15 +229,29 @@ export default function Portfolio() {
                     </p>
                 </div>
                 
-                {/* Highlighted Education Card */}
-                <div className={`mt-6 p-4 rounded-xl border ${theme.border} ${theme.card} flex items-center gap-4`}>
-                    <div className={`p-3 rounded-full ${isDark ? 'bg-slate-800 text-emerald-400' : 'bg-blue-50 text-blue-600'}`}>
-                        <GraduationCap size={24} />
-                    </div>
-                    <div>
-                        <h4 className="font-bold text-lg">University of Cape Coast</h4>
-                        <p className={`text-sm ${theme.textSub}`}>BSc. Computer Science (Student)</p>
-                    </div>
+                {/* Highlighted Education Cards */}
+                <div className="space-y-4">
+                  {/* University */}
+                  <div className={`p-4 rounded-xl border ${theme.border} ${theme.card} flex items-center gap-4`}>
+                      <div className={`p-3 rounded-full ${isDark ? 'bg-slate-800 text-emerald-400' : 'bg-blue-50 text-blue-600'}`}>
+                          <GraduationCap size={24} />
+                      </div>
+                      <div>
+                          <h4 className="font-bold text-lg">University of Cape Coast</h4>
+                          <p className={`text-sm ${theme.textSub}`}>BSc. Computer Science (Student)</p>
+                      </div>
+                  </div>
+
+                  {/* Senior High School */}
+                  <div className={`p-4 rounded-xl border ${theme.border} ${theme.card} flex items-center gap-4`}>
+                      <div className={`p-3 rounded-full ${isDark ? 'bg-slate-800 text-emerald-400' : 'bg-blue-50 text-blue-600'}`}>
+                          <GraduationCap size={24} />
+                      </div>
+                      <div>
+                          <h4 className="font-bold text-lg">University Practice Senior High</h4>
+                          <p className={`text-sm ${theme.textSub}`}>General Science (Elective ICT) | 2022 - 2024</p>
+                      </div>
+                  </div>
                 </div>
 
                 <div className="pt-4 grid grid-cols-2 gap-4">
@@ -361,38 +363,18 @@ export default function Portfolio() {
           <p className={`mb-12 ${theme.textSub}`}>Reach out and let's discuss how I can help you build something amazing.</p>
           
           <div className={`${theme.card} p-8 rounded-3xl border ${theme.border} shadow-xl text-left max-w-xl mx-auto`}>
-            <form className="space-y-4" onSubmit={handleContactSubmit}>
+            <form className="space-y-4">
               <div>
                 <label className={`block text-xs font-bold uppercase mb-2 ${theme.textSub}`}>Name</label>
-                <input 
-                  type="text" 
-                  value={formName} 
-                  onChange={(e) => setFormName(e.target.value)} 
-                  className={`w-full p-3 rounded-xl bg-transparent border ${theme.border} focus:ring-2 focus:ring-${isDark ? 'emerald' : 'blue'}-500 outline-none transition ${theme.textMain}`} 
-                  placeholder="Your name" 
-                  required 
-                />
+                <input type="text" className={`w-full p-3 rounded-xl bg-transparent border ${theme.border} focus:ring-2 focus:ring-${isDark ? 'emerald' : 'blue'}-500 outline-none transition ${theme.textMain}`} placeholder="Your name" />
               </div>
               <div>
                 <label className={`block text-xs font-bold uppercase mb-2 ${theme.textSub}`}>Email</label>
-                <input 
-                  type="email" 
-                  value={formEmail} 
-                  onChange={(e) => setFormEmail(e.target.value)} 
-                  className={`w-full p-3 rounded-xl bg-transparent border ${theme.border} focus:ring-2 focus:ring-${isDark ? 'emerald' : 'blue'}-500 outline-none transition ${theme.textMain}`} 
-                  placeholder="name@example.com" 
-                  required 
-                />
+                <input type="email" className={`w-full p-3 rounded-xl bg-transparent border ${theme.border} focus:ring-2 focus:ring-${isDark ? 'emerald' : 'blue'}-500 outline-none transition ${theme.textMain}`} placeholder="name@example.com" />
               </div>
               <div>
                 <label className={`block text-xs font-bold uppercase mb-2 ${theme.textSub}`}>Message</label>
-                <textarea 
-                  value={formMessage} 
-                  onChange={(e) => setFormMessage(e.target.value)} 
-                  className={`w-full p-3 rounded-xl bg-transparent border ${theme.border} focus:ring-2 focus:ring-${isDark ? 'emerald' : 'blue'}-500 outline-none transition min-h-[120px] ${theme.textMain}`} 
-                  placeholder="Tell me about your project..." 
-                  required
-                ></textarea>
+                <textarea className={`w-full p-3 rounded-xl bg-transparent border ${theme.border} focus:ring-2 focus:ring-${isDark ? 'emerald' : 'blue'}-500 outline-none transition min-h-[120px] ${theme.textMain}`} placeholder="Tell me about your project..."></textarea>
               </div>
               <button className={`w-full py-4 rounded-xl font-bold text-white ${theme.accentBg} hover:opacity-90 transition flex items-center justify-center gap-2 shadow-lg`}>
                 <Send size={18} /> Send Message
