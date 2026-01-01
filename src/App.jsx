@@ -67,12 +67,12 @@ export default function Portfolio() {
     tagline: "Building digital bridges for the African market.",
     bio: "I am a software engineer focused on solving real-world problems through technology. I am currently a student at the University of Cape Coast, pursuing a Bachelor of Science in Computer Science. My expertise lies in building robust Fintech and E-commerce platforms that integrate complex APIs (like Paystack and Mobile Money) with user-friendly interfaces. I am also the founder and lead developer of AJEnterprise, a data reselling platform.",
     location: "Accra, Ghana",
-    email: "contact@jeffreypappoe.com",
+    email: "jnkpappoe@gmail.com",
     avatar: "/profile.jpg", 
     socials: {
-      github: "https://github.com/yourusername",
-      linkedin: "https://linkedin.com/in/yourusername",
-      twitter: "https://twitter.com/yourusername"
+      github: "https://github.com/nisaco",
+      linkedin: "https://www.linkedin.com/in/jeffrey-nii-kpakpo-pappoe-a0997a391",
+      twitter: "https://x.com/jeffrey_pa84707"
     }
   };
 
