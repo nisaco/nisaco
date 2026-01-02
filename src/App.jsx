@@ -5,84 +5,33 @@ import {
   Send, User, Briefcase, FileText, Server, Cpu, Layers, GraduationCap, Download, Twitter, Sparkles
 } from 'lucide-react';
 
-// --- ANIMATION COMPONENT ---
-// This wrapper makes elements fade in when they scroll into view
-const RevealOnScroll = ({ children, delay = 0 }) => {
-  const [isVisible, setIsVisible] = useState(false);
-  const ref = useRef(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.unobserve(entry.target);
-        }
-      },
-      { threshold: 0.1 }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => { if (ref.current) observer.unobserve(ref.current); };
-  }, []);
-
-  return (
-    <div
-      ref={ref}
-      className={`transition-all duration-1000 transform ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-      }`}
-      style={{ transitionDelay: `${delay}ms` }}
-    >
-      {children}
-    </div>
-  );
-};
-
-// --- THEMES (Upgraded with Animated Gradients) ---
+// --- THEMES & GLASSMORPHISM ---
 const THEMES = {
   light: {
-    bg: 'bg-gradient-to-br from-blue-50 via-white to-purple-50', // Breathing gradient
-    navBg: 'bg-white/70 backdrop-blur-xl border-b border-white/20',
-    textMain: 'text-slate-900',
-    textSub: 'text-slate-600',
+    bg: 'bg-gray-50',
+    navBg: 'bg-white/70 backdrop-blur-xl border-white/40',
+    textMain: 'text-gray-900',
+    textSub: 'text-gray-600',
     accent: 'text-blue-600',
     accentBg: 'bg-blue-600',
-    card: 'bg-white/60 backdrop-blur-md border border-white/40 shadow-xl', // Glassmorphism
-    border: 'border-slate-200/50',
-    skillBg: 'bg-white/80'
+    accentBorder: 'hover:border-blue-500/50',
+    accentShadow: 'hover:shadow-blue-500/20',
+    card: 'bg-white/60 backdrop-blur-lg border border-white/50 shadow-xl shadow-blue-500/5', 
+    border: 'border-gray-200/50',
+    skillBg: 'bg-white/50 backdrop-blur-md'
   },
   dark: {
-    bg: 'bg-gradient-to-br from-slate-900 via-slate-800 to-black',
-    navBg: 'bg-slate-900/70 backdrop-blur-xl border-b border-white/5',
+    bg: 'bg-slate-950',
+    navBg: 'bg-slate-950/70 backdrop-blur-xl border-slate-800/60',
     textMain: 'text-white',
     textSub: 'text-slate-400',
     accent: 'text-emerald-400',
     accentBg: 'bg-emerald-500',
-    card: 'bg-slate-800/40 backdrop-blur-md border border-white/5 shadow-xl',
-    border: 'border-white/10',
-    skillBg: 'bg-white/5'
-  },
-  midnight: {
-    bg: 'bg-gradient-to-br from-indigo-950 via-purple-900 to-black',
-    navBg: 'bg-indigo-950/70 backdrop-blur-xl border-b border-white/10',
-    textMain: 'text-indigo-50',
-    textSub: 'text-indigo-200',
-    accent: 'text-pink-400',
-    accentBg: 'bg-pink-500',
-    card: 'bg-indigo-900/30 backdrop-blur-md border border-white/10 shadow-xl',
-    border: 'border-white/10',
-    skillBg: 'bg-indigo-900/40'
-  },
-  sunset: {
-    bg: 'bg-gradient-to-br from-orange-100 via-rose-100 to-amber-100',
-    navBg: 'bg-white/60 backdrop-blur-xl border-b border-white/30',
-    textMain: 'text-slate-900',
-    textSub: 'text-slate-600',
-    accent: 'text-orange-600',
-    accentBg: 'bg-orange-500',
-    card: 'bg-white/50 backdrop-blur-md border border-white/50 shadow-xl',
-    border: 'border-orange-200/50',
-    skillBg: 'bg-white/70'
+    accentBorder: 'hover:border-emerald-500/50',
+    accentShadow: 'hover:shadow-emerald-500/20',
+    card: 'bg-slate-900/60 backdrop-blur-lg border border-slate-700/50 shadow-xl shadow-emerald-500/5',
+    border: 'border-slate-800/60',
+    skillBg: 'bg-slate-800/50 backdrop-blur-md'
   }
 };
 
@@ -90,8 +39,38 @@ export default function App() {
   const [isDark, setIsDark] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
+  const [ripples, setRipples] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const theme = isDark ? THEMES.dark : THEMES.light;
+
+  // --- LOADING EFFECT ---
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // --- SCROLL ANIMATION OBSERVER ---
+  useEffect(() => {
+    if (loading) return; // Wait for loading to finish
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+          // Optional: unobserve if you want it to happen only once
+          // observer.unobserve(entry.target); 
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    const revealedElements = document.querySelectorAll('.reveal');
+    revealedElements.forEach((el) => observer.observe(el));
+
+    return () => revealedElements.forEach((el) => observer.unobserve(el));
+  }, [loading, activeSection]); // Re-run if section changes or loading finishes
 
   const scrollTo = (id) => {
     const element = document.getElementById(id);
@@ -100,6 +79,20 @@ export default function App() {
       setActiveSection(id);
       setIsMenuOpen(false);
     }
+  };
+
+  const createRipple = (e) => {
+    const section = e.currentTarget;
+    const rect = section.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const id = Date.now() + Math.random();
+
+    setRipples((prev) => [...prev, { x, y, id }]);
+
+    setTimeout(() => {
+      setRipples((prev) => prev.filter((ripple) => ripple.id !== id));
+    }, 800);
   };
 
   // --- PERSONAL DATA ---
@@ -158,70 +151,124 @@ export default function App() {
     }
   ];
 
+  // --- RENDER LOADING SCREEN ---
+  if (loading) {
+    return (
+      <div className={`fixed inset-0 z-[100] flex flex-col items-center justify-center ${isDark ? 'bg-slate-950' : 'bg-gray-50'}`}>
+        <style>{`
+          @keyframes spin-gradient {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+          @keyframes pulse-glow {
+            0%, 100% { opacity: 0.5; transform: scale(0.95); }
+            50% { opacity: 1; transform: scale(1.05); }
+          }
+        `}</style>
+        <div className="relative w-24 h-24">
+          <div className="absolute inset-0 rounded-full border-t-4 border-r-4 border-transparent border-t-blue-500 border-r-emerald-500 animate-[spin-gradient_1s_linear_infinite]" />
+          <div className="absolute inset-2 rounded-full border-b-4 border-l-4 border-transparent border-b-purple-500 border-l-pink-500 animate-[spin-gradient_1.5s_linear_infinite_reverse]" />
+          <div className="absolute inset-0 flex items-center justify-center">
+             <span className={`text-2xl font-bold font-mono ${isDark ? 'text-white' : 'text-gray-900'} animate-[pulse-glow_2s_ease-in-out_infinite]`}>
+               JP
+             </span>
+          </div>
+        </div>
+        <div className={`mt-8 font-mono text-sm tracking-widest ${isDark ? 'text-slate-400' : 'text-gray-500'} animate-pulse`}>
+          INITIALIZING...
+        </div>
+      </div>
+    );
+  }
+
+  // --- MAIN APP ---
   return (
-    <div className={`min-h-screen ${theme.textMain} transition-colors duration-500 font-sans selection:bg-blue-500/30 overflow-x-hidden`}>
+    <div className={`min-h-screen ${theme.bg} ${theme.textMain} transition-colors duration-300 font-sans selection:bg-blue-500/30 overflow-x-hidden`}>
       
-      {/* --- GLOBAL STYLES FOR ANIMATIONS --- */}
+      {/* --- ANIMATIONS & STYLES --- */}
       <style>{`
         html { scroll-behavior: smooth; }
-        @keyframes gradient {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
+        
+        /* Utility Animations */
         @keyframes float {
           0% { transform: translateY(0px); }
           50% { transform: translateY(-15px); }
           100% { transform: translateY(0px); }
         }
-        .animate-gradient {
-          background-size: 400% 400%;
-          animation: gradient 15s ease infinite;
+        @keyframes ripple {
+          0% { transform: scale(0); opacity: 0.5; }
+          100% { transform: scale(4); opacity: 0; }
         }
-        .animate-float {
-          animation: float 6s ease-in-out infinite;
+        
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        .delay-100 { animation-delay: 0.1s; transition-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; transition-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; transition-delay: 0.3s; }
+        
+        .ripple {
+          position: absolute;
+          border-radius: 50%;
+          background: rgba(59, 130, 246, 0.4); 
+          width: 100px;
+          height: 100px;
+          margin-left: -50px;
+          margin-top: -50px;
+          pointer-events: none;
+          animation: ripple 0.8s linear forwards;
+          z-index: 5;
         }
-        .glass-card {
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
+
+        /* --- SCROLL REVEAL CLASS --- */
+        .reveal {
+          opacity: 0;
+          transform: translateY(50px); /* Starts 50px down */
+          transition: all 1s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal.active {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        /* --- BOUNCY HOVER CLASS --- */
+        .hover-bounce {
+          transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .hover-bounce:hover {
+          transform: translateY(-12px) scale(1.02);
         }
       `}</style>
-
-      {/* --- ANIMATED BACKGROUND LAYER --- */}
-      <div className={`fixed inset-0 z-[-1] animate-gradient ${theme.bg}`}></div>
-
+       
       {/* --- NAVBAR --- */}
-      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${theme.navBg}`}>
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="font-bold text-xl tracking-tighter flex items-center gap-2 cursor-pointer group" onClick={() => scrollTo('home')}>
-            <div className={`w-10 h-10 rounded-xl ${theme.accentBg} flex items-center justify-center text-white font-mono shadow-lg transform group-hover:rotate-12 transition-transform duration-300`}>
+      <nav className={`fixed top-0 w-full z-50 border-b ${theme.border} ${theme.navBg}`}>
+        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+          <div className="font-bold text-xl tracking-tighter flex items-center gap-2 cursor-pointer reveal active" onClick={() => scrollTo('home')}>
+            <div className={`w-8 h-8 rounded-lg ${theme.accentBg} flex items-center justify-center text-white font-mono shadow-lg`}>
               JP
             </div>
-            <span className="font-bold text-lg tracking-tight group-hover:tracking-wide transition-all duration-300">Jeffrey Pappoe</span>
+            <span>Jeffrey N.K Pappoe</span>
           </div>
 
-          <div className="hidden md:flex items-center gap-8 text-sm font-semibold">
+          <div className="hidden md:flex items-center gap-8 text-sm font-medium reveal active">
             {['Home', 'About', 'Services', 'Projects', 'Contact'].map((item) => (
               <button 
                 key={item}
                 onClick={() => scrollTo(item.toLowerCase())}
-                className={`relative px-2 py-1 hover:${theme.accent} transition-colors ${activeSection === item.toLowerCase() ? theme.accent : theme.textSub} group`}
+                className={`hover:${theme.accent} transition-colors ${activeSection === item.toLowerCase() ? theme.accent : theme.textSub}`}
               >
                 {item}
-                <span className={`absolute bottom-0 left-0 w-0 h-0.5 ${theme.accentBg} transition-all duration-300 group-hover:w-full`}></span>
               </button>
             ))}
             <button 
               onClick={() => setIsDark(!isDark)}
-              className={`p-2 rounded-full border ${theme.border} hover:scale-110 transition-transform duration-200`}
+              className={`p-2 rounded-full border ${theme.border} hover:bg-gray-100 dark:hover:bg-slate-800 transition transform hover:rotate-12`}
             >
-              {isDark ? <Sun size={20} className="text-yellow-400" /> : <Moon size={20} className="text-slate-600" />}
+              {isDark ? <Sun size={18} /> : <Moon size={18} />}
             </button>
           </div>
 
           <div className="md:hidden flex items-center gap-4">
              <button onClick={() => setIsDark(!isDark)}>
-              {isDark ? <Sun size={20} className="text-yellow-400" /> : <Moon size={20} />}
+              {isDark ? <Sun size={20} /> : <Moon size={20} />}
             </button>
             <button onClick={() => setIsMenuOpen(!isMenuOpen)}>
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -230,12 +277,12 @@ export default function App() {
         </div>
 
         {isMenuOpen && (
-          <div className={`md:hidden absolute w-full ${theme.card} border-b ${theme.border} p-4 flex flex-col gap-4 shadow-2xl animate-in slide-in-from-top-5`}>
+          <div className={`md:hidden absolute w-full ${theme.card} border-b ${theme.border} p-4 flex flex-col gap-4 shadow-xl`}>
             {['Home', 'About', 'Services', 'Projects', 'Contact'].map((item) => (
               <button 
                 key={item}
                 onClick={() => scrollTo(item.toLowerCase())}
-                className="text-left font-bold text-lg py-2 pl-4 border-l-4 border-transparent hover:border-current hover:pl-6 transition-all"
+                className="text-left font-medium py-2"
               >
                 {item}
               </button>
@@ -245,70 +292,61 @@ export default function App() {
       </nav>
 
       {/* --- HERO SECTION --- */}
-      <section id="home" className="pt-32 pb-20 px-6 max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center gap-16 min-h-screen">
-        <div className="flex-1 space-y-8 text-center md:text-left z-10">
-          <RevealOnScroll>
-            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider border ${theme.border} ${isDark ? 'bg-emerald-500/10 text-emerald-400' : 'bg-blue-50 text-blue-700'} mb-4 shadow-sm`}>
-              <span className="relative flex h-2 w-2">
-                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${isDark ? 'bg-emerald-400' : 'bg-blue-400'} opacity-75`}></span>
-                <span className={`relative inline-flex rounded-full h-2 w-2 ${isDark ? 'bg-emerald-500' : 'bg-blue-500'}`}></span>
-              </span>
-              Full Stack Developer based in Ghana
-            </div>
-          </RevealOnScroll>
-          
-          <RevealOnScroll delay={100}>
-            <h1 className="text-5xl md:text-7xl font-extrabold leading-tight tracking-tight">
-              Building digital <br/>
-              <span className={`bg-clip-text text-transparent bg-gradient-to-r ${isDark ? 'from-emerald-400 to-cyan-400' : 'from-blue-600 to-indigo-600'}`}>
-                masterpieces
-              </span>
-            </h1>
-          </RevealOnScroll>
+      <section 
+        id="home" 
+        className="pt-32 pb-20 px-6 max-w-6xl mx-auto flex flex-col-reverse md:flex-row items-center gap-12 min-h-screen relative overflow-hidden cursor-pointer"
+        onClick={createRipple}
+      >
+         {/* Animated Background Blobs */}
+         <div className="absolute inset-0 z-0 opacity-30 pointer-events-none">
+            <div className={`absolute top-20 left-10 w-96 h-96 ${isDark ? 'bg-emerald-500' : 'bg-blue-400'} rounded-full mix-blend-multiply filter blur-3xl animate-float`}></div>
+            <div className="absolute top-40 right-10 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl animate-float delay-100"></div>
+            <div className={`absolute -bottom-8 left-1/2 w-96 h-96 ${isDark ? 'bg-blue-500' : 'bg-pink-400'} rounded-full mix-blend-multiply filter blur-3xl animate-float delay-200`}></div>
+         </div>
 
-          <RevealOnScroll delay={200}>
-            <p className={`text-xl md:text-2xl ${theme.textSub} max-w-lg mx-auto md:mx-0 leading-relaxed`}>
-              {personalInfo.tagline} I specialize in robust, automated platforms that drive business growth.
-            </p>
-          </RevealOnScroll>
+         {/* Render Ripples */}
+         {ripples.map(ripple => (
+            <span
+              key={ripple.id}
+              className="ripple"
+              style={{
+                left: ripple.x,
+                top: ripple.y
+              }}
+            />
+          ))}
 
-          <RevealOnScroll delay={300}>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-4">
-              <button 
-                onClick={() => scrollTo('projects')} 
-                className={`${theme.accentBg} text-white px-8 py-4 rounded-2xl font-bold hover:scale-105 transition transform shadow-xl shadow-blue-500/20 flex items-center justify-center gap-2`}
-              >
-                View My Work <Code2 size={20} />
-              </button>
-              <a 
-                href="/resume.pdf" 
-                download 
-                className={`px-8 py-4 rounded-2xl font-bold border ${theme.border} ${theme.card} hover:scale-105 transition transform flex items-center justify-center gap-2 shadow-md`}
-              >
-                <Download size={20} /> Download CV
-              </a>
-            </div>
-          </RevealOnScroll>
-          
-          <RevealOnScroll delay={400}>
-            <div className={`flex gap-6 justify-center md:justify-start pt-8 ${theme.textSub}`}>
-              {[
-                { icon: Github, link: personalInfo.socials.github },
-                { icon: Linkedin, link: personalInfo.socials.linkedin },
-                { icon: Twitter, link: personalInfo.socials.twitter },
-                { icon: Mail, link: `mailto:${personalInfo.email}` }
-              ].map((item, index) => (
-                <a key={index} href={item.link} target="_blank" rel="noopener noreferrer" className="hover:text-current hover:-translate-y-1 transition transform duration-200">
-                  <item.icon size={28} />
-                </a>
-              ))}
-            </div>
-          </RevealOnScroll>
+        <div className="flex-1 space-y-6 text-center md:text-left relative z-10 pointer-events-none">
+          <div className={`reveal inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ${theme.border} ${isDark ? 'bg-emerald-500/10 text-emerald-400' : 'bg-blue-50 text-blue-700'} pointer-events-auto backdrop-blur-sm`}>
+            <Sparkles size={14} className="inline mr-2" />
+            Full Stack Developer based in Ghana
+          </div>
+          <h1 className="reveal delay-100 text-4xl md:text-6xl font-bold leading-tight">
+            Building digital <span className={theme.accent}>solutions</span> for the modern web.
+          </h1>
+          <p className={`reveal delay-200 text-xl ${theme.textSub} max-w-lg mx-auto md:mx-0`}>
+            {personalInfo.tagline} I specialize in creating seamless, automated platforms that drive business growth.
+          </p>
+          <div className="reveal delay-300 flex gap-4 justify-center md:justify-start pt-4 pointer-events-auto">
+            <button onClick={(e) => { e.stopPropagation(); scrollTo('projects'); }} className={`${theme.accentBg} text-white px-8 py-3 rounded-xl font-bold hover:opacity-90 hover:scale-105 transition-all shadow-lg shadow-blue-500/20`}>
+              View My Work
+            </button>
+            <a href="/resume.pdf" download onClick={(e) => e.stopPropagation()} className={`px-8 py-3 rounded-xl font-bold border ${theme.border} hover:bg-gray-100 dark:hover:bg-slate-800 hover:scale-105 transition-all flex items-center gap-2 backdrop-blur-sm`}>
+              <Download size={18} /> Download CV
+            </a>
+          </div>
+           
+          <div className={`reveal delay-300 flex gap-6 justify-center md:justify-start pt-8 ${theme.textSub} pointer-events-auto`}>
+            <a href={personalInfo.socials.github} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="hover:text-current transition hover:scale-125 transform duration-200 hover:-translate-y-1"><Github size={24} /></a>
+            <a href={personalInfo.socials.linkedin} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="hover:text-current transition hover:scale-125 transform duration-200 hover:-translate-y-1"><Linkedin size={24} /></a>
+            <a href={personalInfo.socials.twitter} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="hover:text-current transition hover:scale-125 transform duration-200 hover:-translate-y-1"><Twitter size={24} /></a>
+            <a href={`mailto:${personalInfo.email}`} onClick={(e) => e.stopPropagation()} className="hover:text-current transition hover:scale-125 transform duration-200 hover:-translate-y-1"><Mail size={24} /></a>
+          </div>
         </div>
         
-        {/* --- PROFILE PICTURE (Floating Animation) --- */}
-        <div className="flex-1 flex justify-center relative z-10 animate-float">
-          <div className={`w-72 h-72 md:w-[28rem] md:h-[28rem] rounded-[2rem] overflow-hidden border-8 ${isDark ? 'border-slate-800/50' : 'border-white/50'} shadow-2xl relative rotate-3 hover:rotate-0 transition-all duration-500`}>
+        {/* --- PROFILE PICTURE --- */}
+        <div className="flex-1 flex justify-center relative pointer-events-none reveal delay-200">
+          <div className={`w-64 h-64 md:w-96 md:h-96 rounded-full overflow-hidden border-4 ${isDark ? 'border-slate-800' : 'border-white'} shadow-2xl relative z-10 bg-gradient-to-br from-blue-500 to-emerald-500`}>
              <img 
                src={personalInfo.avatar} 
                alt="Jeffrey Pappoe" 
@@ -317,93 +355,86 @@ export default function App() {
                    e.target.src = "https://api.dicebear.com/7.x/avataaars/svg?seed=Jeffrey&backgroundColor=b6e3f4"; 
                }}
              />
-             {/* Glass overlay effect */}
-             <div className="absolute inset-0 ring-1 ring-inset ring-black/10 rounded-[2rem]"></div>
           </div>
-          {/* Decorative Elements behind image */}
-          <div className={`absolute -bottom-10 -right-10 w-40 h-40 rounded-full blur-2xl opacity-60 ${theme.accentBg} animate-pulse`}></div>
-          <div className={`absolute -top-10 -left-10 w-40 h-40 rounded-full blur-2xl opacity-60 bg-purple-500 animate-pulse delay-700`}></div>
+          <div className={`absolute top-0 right-10 w-72 h-72 rounded-full blur-3xl opacity-20 ${theme.accentBg} animate-pulse`}></div>
         </div>
       </section>
 
       {/* --- ABOUT SECTION --- */}
-      <section id="about" className="py-32 px-6 relative overflow-hidden">
-        <div className="max-w-6xl mx-auto relative z-10">
-          <div className="flex flex-col md:flex-row gap-20 items-start">
+      <section id="about" className={`py-20 px-6 ${isDark ? 'bg-slate-900/30' : 'bg-gray-50'}`}>
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row gap-16 items-start">
             
             {/* Biography */}
-            <div className="flex-1 space-y-8">
-              <RevealOnScroll>
-                <h2 className="text-4xl font-bold flex items-center gap-4">
-                    About Me <div className={`h-1.5 w-24 ${theme.accentBg} rounded-full`}></div>
+            <div className="flex-1 space-y-6">
+                <h2 className="text-3xl font-bold flex items-center gap-3 reveal">
+                    About Me <div className={`h-1 w-20 ${theme.accentBg} rounded-full`}></div>
                 </h2>
-              </RevealOnScroll>
-              
-              <RevealOnScroll delay={100}>
-                <div className={`text-lg ${theme.textSub} leading-loose space-y-6 font-medium`}>
+                <div className={`text-lg ${theme.textSub} leading-relaxed space-y-4 reveal delay-100`}>
                     <p>
-                        Hello! I'm <strong>{personalInfo.name}</strong>, a software engineer who believes code is art. 
+                        Hello! I'm <strong>{personalInfo.name}</strong>, a passionate software developer and entrepreneur from Accra, Ghana.
                     </p>
                     <p>
-                        My journey began with a curiosity about digital payments in Africa. That curiosity evolved into <strong>AJEnterprise</strong>, a platform now serving thousands. I don't just write code; I architect systems that solve complex logistic and financial problems.
+                        {personalInfo.bio}
                     </p>
                     <p>
-                        I specialize in the <strong>MERN stack</strong> and complex API integrations. When I'm not debugging, I'm likely exploring new tech stacks or mentoring peers at university.
+                        I focus on the <strong>MERN stack (MongoDB, Express, React, Node.js)</strong> and have deep experience integrating African payment gateways like Paystack and Hubtel. When I'm not coding, I'm mentoring upcoming developers or exploring new business opportunities in the tech space.
                     </p>
                 </div>
-              </RevealOnScroll>
                 
-                {/* Education Cards */}
-                <div className="space-y-4 pt-4">
-                  <RevealOnScroll delay={200}>
-                    <div className={`p-5 rounded-2xl border ${theme.border} ${theme.card} flex items-center gap-5 hover:translate-x-2 transition-transform duration-300`}>
-                        <div className={`p-4 rounded-xl ${isDark ? 'bg-slate-800 text-emerald-400' : 'bg-blue-50 text-blue-600'} shadow-inner`}>
-                            <GraduationCap size={28} />
-                        </div>
-                        <div>
-                            <h4 className="font-bold text-xl">University of Cape Coast</h4>
-                            <p className={`text-sm ${theme.textSub} font-medium`}>BSc. Computer Science (Student)</p>
-                        </div>
-                    </div>
-                  </RevealOnScroll>
+                {/* Highlighted Education Cards */}
+                <div className="space-y-4 reveal delay-200">
+                  {/* University */}
+                  <div className={`p-4 rounded-xl ${theme.card} flex items-center gap-4 hover-bounce hover:shadow-2xl ${theme.accentBorder} transition-all`}>
+                      <div className={`p-3 rounded-full ${isDark ? 'bg-slate-800 text-emerald-400' : 'bg-blue-50 text-blue-600'}`}>
+                          <GraduationCap size={24} />
+                      </div>
+                      <div>
+                          <h4 className="font-bold text-lg">University of Cape Coast</h4>
+                          <p className={`text-sm ${theme.textSub}`}>BSc. Computer Science (Student)</p>
+                      </div>
+                  </div>
 
-                  <RevealOnScroll delay={300}>
-                    <div className={`p-5 rounded-2xl border ${theme.border} ${theme.card} flex items-center gap-5 hover:translate-x-2 transition-transform duration-300`}>
-                        <div className={`p-4 rounded-xl ${isDark ? 'bg-slate-800 text-emerald-400' : 'bg-blue-50 text-blue-600'} shadow-inner`}>
-                            <Briefcase size={28} />
-                        </div>
-                        <div>
-                            <h4 className="font-bold text-xl">University Practice Senior High</h4>
-                            <p className={`text-sm ${theme.textSub} font-medium`}>General Science (Elective ICT) | 2022 - 2024</p>
-                        </div>
+                  {/* Senior High School */}
+                  <div className={`p-4 rounded-xl ${theme.card} flex items-center gap-4 hover-bounce hover:shadow-2xl ${theme.accentBorder} transition-all`}>
+                      <div className={`p-3 rounded-full ${isDark ? 'bg-slate-800 text-emerald-400' : 'bg-blue-50 text-blue-600'}`}>
+                          <GraduationCap size={24} />
+                      </div>
+                      <div>
+                          <h4 className="font-bold text-lg">University Practice Senior High</h4>
+                          <p className={`text-sm ${theme.textSub}`}>General Science (Elective ICT) | 2022 - 2024</p>
+                      </div>
+                  </div>
+                </div>
+
+                <div className="pt-4 grid grid-cols-2 gap-4 reveal delay-300">
+                    <div className={`p-4 rounded-xl ${theme.card} hover-bounce hover:shadow-xl ${theme.accentBorder} text-center`}>
+                        <h4 className="font-bold text-3xl mb-1 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">2+</h4>
+                        <p className={`text-sm ${theme.textSub}`}>Years Experience</p>
                     </div>
-                  </RevealOnScroll>
+                    <div className={`p-4 rounded-xl ${theme.card} hover-bounce hover:shadow-xl ${theme.accentBorder} text-center`}>
+                        <h4 className="font-bold text-3xl mb-1 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">3+</h4>
+                        <p className={`text-sm ${theme.textSub}`}>Projects Delivered</p>
+                    </div>
                 </div>
             </div>
 
             {/* Skills Grid */}
-            <div className="flex-1 w-full">
-              <RevealOnScroll delay={400}>
-                <h3 className="text-2xl font-bold mb-8 flex items-center gap-2">
-                   <Sparkles className="text-yellow-500" /> Technical Arsenal
-                </h3>
-              </RevealOnScroll>
-              
-              <div className="grid grid-cols-2 gap-4">
-                  {skills.map((skill, index) => (
-                    <RevealOnScroll key={index} delay={index * 100}>
-                      <div className={`group flex items-center gap-4 p-5 rounded-2xl border ${theme.border} ${theme.skillBg} hover:border-current hover:${theme.accent} transition-all duration-300 hover:shadow-lg cursor-default`}>
-                          <div className={`${isDark ? 'text-emerald-400' : 'text-blue-600'} group-hover:scale-125 transition-transform duration-300`}>
-                              <skill.icon size={28} />
-                          </div>
-                          <div>
-                              <h4 className="font-bold text-base">{skill.name}</h4>
-                              <p className={`text-xs ${theme.textSub} font-medium tracking-wide uppercase`}>{skill.level}</p>
-                          </div>
-                      </div>
-                    </RevealOnScroll>
-                  ))}
-              </div>
+            <div className="flex-1 w-full reveal delay-100">
+                <h3 className="text-2xl font-bold mb-6">Technical Skills</h3>
+                <div className="grid grid-cols-2 gap-4">
+                    {skills.map((skill, index) => (
+                        <div key={index} className={`flex items-center gap-3 p-4 rounded-xl border ${theme.border} ${theme.skillBg} hover-bounce hover:border-current hover:${theme.accent} ${theme.accentShadow} transition duration-300 cursor-default group`}>
+                            <div className={`${isDark ? 'text-emerald-400' : 'text-blue-600'} group-hover:scale-125 transition-transform duration-300`}>
+                                <skill.icon size={24} />
+                            </div>
+                            <div>
+                                <h4 className="font-bold text-sm">{skill.name}</h4>
+                                <p className={`text-xs ${theme.textSub}`}>{skill.level}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
 
           </div>
@@ -411,148 +442,112 @@ export default function App() {
       </section>
 
       {/* --- SERVICES SECTION --- */}
-      <section id="services" className="py-32 px-6">
-        <div className="max-w-7xl mx-auto">
-          <RevealOnScroll>
-            <div className="text-center mb-20">
-              <h2 className="text-4xl font-bold mb-4">My Services</h2>
-              <p className={`text-xl ${theme.textSub}`}>I turn complex problems into elegant software solutions.</p>
-            </div>
-          </RevealOnScroll>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <section id="services" className={`py-20 px-6 border-y ${theme.border} ${theme.bg}`}>
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16 reveal">
+            <h2 className="text-3xl font-bold mb-4">My Services</h2>
+            <p className={theme.textSub}>I help businesses grow with scalable software solutions.</p>
+          </div>
+           
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {services.map((s, i) => (
-              <RevealOnScroll key={i} delay={i * 100}>
-                <div className={`${theme.card} p-8 rounded-3xl border ${theme.border} hover:-translate-y-3 transition duration-500 shadow-lg hover:shadow-2xl h-full flex flex-col`}>
-                  <div className={`w-16 h-16 rounded-2xl mb-6 flex items-center justify-center ${isDark ? 'bg-slate-800 text-emerald-400' : 'bg-blue-50 text-blue-600'} shadow-inner`}>
-                    <s.icon size={32} />
-                  </div>
-                  <h3 className="font-bold text-xl mb-3">{s.title}</h3>
-                  <p className={`text-sm ${theme.textSub} leading-relaxed`}>{s.desc}</p>
+              <div key={i} className={`${theme.card} p-6 rounded-2xl hover-bounce hover:shadow-2xl ${theme.accentBorder} reveal`} style={{ transitionDelay: `${i * 100}ms` }}>
+                <div className={`w-14 h-14 rounded-2xl mb-6 flex items-center justify-center transition-transform duration-500 hover:rotate-12 ${isDark ? 'bg-slate-800 text-emerald-400' : 'bg-blue-50 text-blue-600'}`}>
+                  <s.icon size={28} />
                 </div>
-              </RevealOnScroll>
+                <h3 className="font-bold text-lg mb-3">{s.title}</h3>
+                <p className={`text-sm ${theme.textSub} leading-relaxed`}>{s.desc}</p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* --- PROJECTS SECTION --- */}
-      <section id="projects" className={`py-32 px-6 ${isDark ? 'bg-black/20' : 'bg-white/50'}`}>
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
-            <RevealOnScroll>
-              <div>
-                <h2 className="text-4xl font-bold mb-2">Featured Projects</h2>
-                <p className={`text-xl ${theme.textSub}`}>Some of my recent masterpieces.</p>
-              </div>
-            </RevealOnScroll>
-            <a href={personalInfo.socials.github} target="_blank" className={`flex items-center gap-2 text-sm font-bold ${theme.accent} border-b-2 border-transparent hover:border-current transition`}>
-              View GitHub <ExternalLink size={16} />
-            </a>
+      <section id="projects" className={`py-20 px-6 max-w-6xl mx-auto ${isDark ? 'bg-slate-900/20' : 'bg-white'}`}>
+        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4 reveal">
+          <div>
+            <h2 className="text-3xl font-bold mb-2">Featured Projects</h2>
+            <p className={theme.textSub}>A selection of my recent work.</p>
           </div>
+          <button className={`flex items-center gap-2 text-sm font-bold ${theme.accent} border-b-2 border-transparent hover:border-current transition hover:scale-105`}>
+            View GitHub <ExternalLink size={16} />
+          </button>
+        </div>
 
-          <div className="grid md:grid-cols-3 gap-10">
-            {projects.map((project, i) => (
-              <RevealOnScroll key={i} delay={i * 150}>
-                <div className={`${theme.card} rounded-3xl border ${theme.border} overflow-hidden hover:shadow-2xl transition-all duration-500 group h-full flex flex-col`}>
-                  {/* Project Mockup */}
-                  <div className={`h-56 ${isDark ? 'bg-slate-800' : 'bg-gray-100'} flex items-center justify-center relative overflow-hidden`}>
-                    <Code2 size={64} className={`opacity-20 ${theme.textSub} transform group-hover:scale-110 transition duration-700`} />
-                    <div className={`absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-sm`}>
-                       <a href={project.link} target="_blank" rel="noopener noreferrer" className="bg-white text-black px-8 py-3 rounded-full font-bold text-sm transform translate-y-4 group-hover:translate-y-0 transition duration-300 shadow-xl hover:bg-gray-100">
-                         View Live Demo
-                       </a>
-                    </div>
-                  </div>
-                  
-                  <div className="p-8 flex-1 flex flex-col">
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <span className={`text-xs font-bold uppercase tracking-wider ${theme.accent}`}>{project.category}</span>
-                        <h3 className="text-2xl font-bold mt-1 group-hover:text-blue-500 transition-colors">{project.title}</h3>
-                      </div>
-                    </div>
-                    <p className={`text-sm ${theme.textSub} mb-6 line-clamp-4 leading-relaxed flex-1`}>
-                      {project.desc}
-                    </p>
-                    <div className="flex flex-wrap gap-2 mt-auto">
-                      {project.tech.map(t => (
-                        <span key={t} className={`px-3 py-1 rounded-lg text-xs font-semibold border ${theme.border} ${theme.bg} ${theme.textMain}`}>
-                          {t}
-                        </span>
-                      ))}
-                    </div>
+        <div className="grid md:grid-cols-3 gap-8">
+          {projects.map((project, i) => (
+            <div key={i} className={`${theme.card} rounded-2xl overflow-hidden hover-bounce hover:shadow-2xl ${theme.accentBorder} group reveal`} style={{ transitionDelay: `${i * 100}ms` }}>
+              {/* Project Mockup Placeholder */}
+              <div className={`h-48 ${isDark ? 'bg-slate-800/50' : 'bg-gray-100/50'} flex items-center justify-center relative overflow-hidden backdrop-blur-sm`}>
+                <Code2 size={48} className={`opacity-20 ${theme.textSub} transition-transform duration-700 group-hover:scale-125 group-hover:rotate-6`} />
+                <div className={`absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300`}>
+                   <a href={project.link} target="_blank" rel="noopener noreferrer" className="bg-white text-black px-6 py-2 rounded-full font-bold text-sm transform translate-y-4 group-hover:translate-y-0 transition duration-300 hover:bg-gray-200">View Project</a>
+                </div>
+              </div>
+              
+              <div className="p-6">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <span className={`text-xs font-bold uppercase tracking-wider ${theme.accent}`}>{project.category}</span>
+                    <h3 className="text-xl font-bold mt-1 group-hover:text-blue-500 transition-colors">{project.title}</h3>
                   </div>
                 </div>
-              </RevealOnScroll>
-            ))}
-          </div>
+                <p className={`text-sm ${theme.textSub} mb-6 line-clamp-3 leading-relaxed`}>
+                  {project.desc}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {project.tech.map(t => (
+                    <span key={t} className={`px-2 py-1 rounded-md text-xs font-medium border ${theme.border} ${theme.bg} ${theme.textSub}`}>
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
       {/* --- CONTACT SECTION --- */}
-      <section id="contact" className="py-32 px-6 relative">
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <RevealOnScroll>
-            <h2 className="text-4xl font-bold mb-6">Ready to start your next project?</h2>
-            <p className={`mb-12 text-xl ${theme.textSub}`}>Reach out and let's discuss how I can help you build something amazing.</p>
-          </RevealOnScroll>
-          
-          <RevealOnScroll delay={200}>
-            <div className={`${theme.card} p-10 rounded-[2.5rem] border ${theme.border} shadow-2xl text-left max-w-2xl mx-auto backdrop-blur-2xl`}>
-              <form className="space-y-6" onSubmit={handleContactSubmit}>
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className={`block text-xs font-bold uppercase mb-2 ${theme.textSub}`}>Name</label>
-                    <input 
-                      type="text" 
-                      value={formName} 
-                      onChange={(e) => setFormName(e.target.value)} 
-                      className={`w-full p-4 rounded-xl bg-transparent border ${theme.border} focus:ring-2 focus:ring-${isDark ? 'emerald' : 'blue'}-500 outline-none transition ${theme.textMain}`} 
-                      placeholder="Your name" 
-                      required 
-                    />
-                  </div>
-                  <div>
-                    <label className={`block text-xs font-bold uppercase mb-2 ${theme.textSub}`}>Email</label>
-                    <input 
-                      type="email" 
-                      value={formEmail} 
-                      onChange={(e) => setFormEmail(e.target.value)} 
-                      className={`w-full p-4 rounded-xl bg-transparent border ${theme.border} focus:ring-2 focus:ring-${isDark ? 'emerald' : 'blue'}-500 outline-none transition ${theme.textMain}`} 
-                      placeholder="name@example.com" 
-                      required 
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className={`block text-xs font-bold uppercase mb-2 ${theme.textSub}`}>Message</label>
-                  <textarea 
-                    value={formMessage} 
-                    onChange={(e) => setFormMessage(e.target.value)} 
-                    className={`w-full p-4 rounded-xl bg-transparent border ${theme.border} focus:ring-2 focus:ring-${isDark ? 'emerald' : 'blue'}-500 outline-none transition min-h-[150px] ${theme.textMain}`} 
-                    placeholder="Tell me about your project..." 
-                    required
-                  ></textarea>
-                </div>
-                <button className={`w-full py-5 rounded-xl font-bold text-white text-lg ${theme.accentBg} hover:scale-[1.02] active:scale-95 transition flex items-center justify-center gap-3 shadow-lg shadow-blue-500/25`}>
-                  <Send size={20} /> Send Message
-                </button>
-              </form>
-            </div>
-          </RevealOnScroll>
-          
-          <div className="mt-16 flex justify-center gap-8">
-             <a href={`mailto:${personalInfo.email}`} className={`flex items-center gap-3 ${theme.textMain} font-medium hover:${theme.accent} transition scale-110`}>
-                <Mail size={24} /> {personalInfo.email}
+      <section id="contact" className={`py-20 px-6 border-t ${theme.border} ${isDark ? 'bg-slate-900/50' : 'bg-blue-50'}`}>
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="reveal">
+            <h2 className="text-3xl font-bold mb-4">Ready to start your next project?</h2>
+            <p className={`mb-12 ${theme.textSub}`}>Reach out and let's discuss how I can help you build something amazing.</p>
+          </div>
+           
+          <div className={`${theme.card} p-8 rounded-3xl border ${theme.border} shadow-xl text-left max-w-xl mx-auto reveal delay-100 hover:shadow-2xl transition-shadow duration-500`}>
+            <form className="space-y-4">
+              <div>
+                <label className={`block text-xs font-bold uppercase mb-2 ${theme.textSub}`}>Name</label>
+                <input type="text" className={`w-full p-3 rounded-xl bg-transparent border ${theme.border} focus:ring-2 focus:ring-${isDark ? 'emerald' : 'blue'}-500 outline-none transition ${theme.textMain}`} placeholder="Your name" />
+              </div>
+              <div>
+                <label className={`block text-xs font-bold uppercase mb-2 ${theme.textSub}`}>Email</label>
+                <input type="email" className={`w-full p-3 rounded-xl bg-transparent border ${theme.border} focus:ring-2 focus:ring-${isDark ? 'emerald' : 'blue'}-500 outline-none transition ${theme.textMain}`} placeholder="name@example.com" />
+              </div>
+              <div>
+                <label className={`block text-xs font-bold uppercase mb-2 ${theme.textSub}`}>Message</label>
+                <textarea className={`w-full p-3 rounded-xl bg-transparent border ${theme.border} focus:ring-2 focus:ring-${isDark ? 'emerald' : 'blue'}-500 outline-none transition min-h-[120px] ${theme.textMain}`} placeholder="Tell me about your project..."></textarea>
+              </div>
+              <button className={`w-full py-4 rounded-xl font-bold text-white ${theme.accentBg} hover:opacity-90 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 shadow-lg`}>
+                <Send size={18} /> Send Message
+              </button>
+            </form>
+          </div>
+           
+          <div className="mt-12 flex justify-center gap-8 reveal delay-200">
+             <a href={`mailto:${personalInfo.email}`} className={`flex items-center gap-2 ${theme.textSub} hover:${theme.accent} transition hover:scale-110`}>
+                <Mail size={20} /> {personalInfo.email}
              </a>
           </div>
         </div>
       </section>
 
       {/* --- FOOTER --- */}
-      <footer className={`py-12 text-center text-sm ${theme.textSub} border-t ${theme.border} relative z-10`}>
-        <p>&copy; {new Date().getFullYear()} {personalInfo.name}. Built with React & Tailwind.</p>
+      <footer className={`py-8 text-center text-sm ${theme.textSub} border-t ${theme.border}`}>
+        <p>&copy; {new Date().getFullYear()} {personalInfo.name}. All rights reserved.</p>
       </footer>
 
     </div>
