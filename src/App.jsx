@@ -138,9 +138,9 @@ export default function App() {
     {
       title: "Corporate Logistics Hub",
       category: "Business Website",
-      desc: "A corporate presence for a logistics company featuring shipment tracking, service quotation forms, and a dynamic CMS for news updates.",
-      tech: ["Node.js", "Tailwind", "React", "Pretty"],
-      link: "https://j3cube-data.onrender.com"
+      desc: "A corporate presence for freelance artisans, where users can find trusted artisans to hire.",
+      tech: ["Node.js", "Tailwind", "React", "Pretty", "MongoDB"],
+      link: "https://hireme-bk0l.onrender.com"
     },
     {
       title: "EduTrack System",
