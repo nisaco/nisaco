@@ -129,18 +129,25 @@ export default function App() {
 
   const projects = [
     {
-      title: "AJEnterprise",
+      title: "AJData",
       category: "Fintech Platform",
       desc: "A fully automated data reselling platform allowing users to buy bundles and airtime. Features include an Agent reseller system, real-time wallet funding via Paystack, and an Admin dashboard for sales tracking.",
       tech: ["React", "Node.js", "MongoDB", "Paystack API"],
       link: "https://ajenterprise-datastore.onrender.com"
     },
     {
-      title: "Corporate Logistics Hub",
+      title: "LinkUp Gh",
       category: "Business Website",
       desc: "A corporate presence for freelance artisans, where users can find trusted artisans to hire.",
-      tech: ["Node.js", "Tailwind", "React", "Pretty", "MongoDB"],
+      tech: ["Node.js", "Tailwind", "React", "Express(API)", "MongoDB", "Paystack"],
       link: "https://hireme-bk0l.onrender.com"
+    },
+    {
+      title: "AJEnterprise",
+      category: "Data-Reselling Platform",
+      desc: "A fully automated data reselling platform allowing users to buy bundles and airtime. Features include an Agent reseller system, real-time wallet funding via Paystack, and an Admin dashboard for sales tracking.",
+      tech: ["React", "Node.js", "MongoDB", "Paystack API"],
+      link: "https://data-vending-app.onrender.com"
     },
     {
       title: "EduTrack System",
@@ -547,7 +554,7 @@ export default function App() {
 
       {/* --- FOOTER --- */}
       <footer className={`py-8 text-center text-sm ${theme.textSub} border-t ${theme.border}`}>
-        <p>&copy; {new Date().getFullYear()} {personalInfo.name}. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} {personalInfo.name}. All rights reserved | Developed by J3Cube.</p>
       </footer>
 
     </div>
