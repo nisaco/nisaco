@@ -150,11 +150,18 @@ export default function App() {
       link: "https://data-vending-app.onrender.com"
     },
     {
-      title: "EduTrack System",
+      title: "Ucc Shuttle Tracker",
       category: "EdTech",
       desc: "Student management system for local tertiaries to track shuttles on campus.",
       tech: ["React.js", "Google Maps", "MongoDb", "Twilio API"],
       link: "https://ucc-shuttle-live-2h1i.onrender.com"
+    },
+    {
+      title: "Gospel-Light-Church ManagementSystem",
+      category: "DBMS",
+      desc: "A database management system for monotoring the financial obligations and welfare of memebers in the church",
+      tech: ["React.js", "Express API", "MongoDb", "Node.js", "Vite"],
+      link: "https://gospel-light-church.onrender.com"
     }
   ];
 
@@ -420,7 +427,7 @@ export default function App() {
                         <p className={`text-sm ${theme.textSub}`}>Years Experience</p>
                     </div>
                     <div className={`p-4 rounded-xl ${theme.card} hover-bounce hover:shadow-xl ${theme.accentBorder} text-center`}>
-                        <h4 className="font-bold text-3xl mb-1 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">3+</h4>
+                        <h4 className="font-bold text-3xl mb-1 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">4+</h4>
                         <p className={`text-sm ${theme.textSub}`}>Projects Delivered</p>
                     </div>
                 </div>
