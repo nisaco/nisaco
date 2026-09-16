@@ -100,3 +100,4 @@ export function useSpatialOrientation() {
 
   return coords;
 }
+

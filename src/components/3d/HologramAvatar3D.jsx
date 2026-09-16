@@ -112,6 +112,124 @@ export default function HologramAvatar3D({
   const [energyPulseActive, setEnergyPulseActive] = useState(false);
   const [isHoveringAvatar, setIsHoveringAvatar] = useState(false);
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+  const [processedPngUrl, setProcessedPngUrl] = useState(null);
+
+  // --- AUTOMATED CANVAS ALPHA BACKGROUND REMOVER ---
+  // Converts any outer background pixels to 100% transparent PNG in real-time
+  useEffect(() => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = '/profile_cutout.jpg';
+    img.onload = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        const w = img.naturalWidth || img.width;
+        const h = img.naturalHeight || img.height;
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        ctx.drawImage(img, 0, 0);
+
+        const imgData = ctx.getImageData(0, 0, w, h);
+        const data = imgData.data;
+
+        // BFS Flood Fill from all outer boundaries
+        const visited = new Uint8Array(w * h);
+        const queue = new Int32Array(w * h);
+        let head = 0;
+        let tail = 0;
+
+        const isBackgroundPixel = (idx) => {
+          const r = data[idx];
+          const g = data[idx + 1];
+          const b = data[idx + 2];
+          return r < 38 && g < 38 && b < 38;
+        };
+
+        // Seed top and bottom borders
+        for (let x = 0; x < w; x++) {
+          const topIdx = (0 * w + x) * 4;
+          if (isBackgroundPixel(topIdx)) {
+            visited[0 * w + x] = 1;
+            queue[tail++] = 0 * w + x;
+          }
+          const btmIdx = ((h - 1) * w + x) * 4;
+          if (isBackgroundPixel(btmIdx)) {
+            visited[(h - 1) * w + x] = 1;
+            queue[tail++] = (h - 1) * w + x;
+          }
+        }
+
+        // Seed left and right borders
+        for (let y = 0; y < h; y++) {
+          const leftIdx = (y * w + 0) * 4;
+          if (!visited[y * w + 0] && isBackgroundPixel(leftIdx)) {
+            visited[y * w + 0] = 1;
+            queue[tail++] = y * w + 0;
+          }
+          const rightIdx = (y * w + (w - 1)) * 4;
+          if (!visited[y * w + (w - 1)] && isBackgroundPixel(rightIdx)) {
+            visited[y * w + (w - 1)] = 1;
+            queue[tail++] = y * w + (w - 1);
+          }
+        }
+
+        // Flood fill to clear alpha
+        while (head < tail) {
+          const curr = queue[head++];
+          const cx = curr % w;
+          const cy = (curr / w) | 0;
+
+          // Set 100% transparent
+          data[curr * 4 + 3] = 0;
+
+          const neighbors = [
+            cy > 0 ? (cy - 1) * w + cx : -1,
+            cy < h - 1 ? (cy + 1) * w + cx : -1,
+            cx > 0 ? cy * w + (cx - 1) : -1,
+            cx < w - 1 ? cy * w + (cx + 1) : -1
+          ];
+
+          for (let i = 0; i < 4; i++) {
+            const n = neighbors[i];
+            if (n !== -1 && !visited[n]) {
+              const nIdx = n * 4;
+              if (isBackgroundPixel(nIdx)) {
+                visited[n] = 1;
+                queue[tail++] = n;
+              }
+            }
+          }
+        }
+
+        // Smooth edge antialiasing
+        for (let y = 1; y < h - 1; y++) {
+          for (let x = 1; x < w - 1; x++) {
+            const idx = (y * w + x) * 4;
+            if (data[idx + 3] > 0) {
+              const hasTransNeighbor = 
+                data[((y - 1) * w + x) * 4 + 3] === 0 ||
+                data[((y + 1) * w + x) * 4 + 3] === 0 ||
+                data[(y * w + (x - 1)) * 4 + 3] === 0 ||
+                data[(y * w + (x + 1)) * 4 + 3] === 0;
+
+              if (hasTransNeighbor) {
+                const brightness = Math.max(data[idx], data[idx + 1], data[idx + 2]);
+                if (brightness < 60) {
+                  data[idx + 3] = Math.min(255, Math.max(0, (brightness - 10) * 5));
+                }
+              }
+            }
+          }
+        }
+
+        ctx.putImageData(imgData, 0, 0);
+        setProcessedPngUrl(canvas.toDataURL('image/png'));
+      } catch (err) {
+        console.error("Canvas cutout processing:", err);
+      }
+    };
+  }, []);
 
   // Responsive window resize tracker
   useEffect(() => {
@@ -145,7 +263,7 @@ export default function HologramAvatar3D({
       const rect = containerRef.current.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
-      targetX = ((e.clientX - centerX) / (rect.width / 2)) * 24; // tilt degrees
+      targetX = ((e.clientX - centerX) / (rect.width / 2)) * 24;
       targetY = -((e.clientY - centerY) / (rect.height / 2)) * 20;
     };
 
@@ -353,19 +471,18 @@ export default function HologramAvatar3D({
             }}
           />
 
-          {/* THE CUTOUT FIGURE (100% Isolated Body) */}
+          {/* THE 100% TRANSPARENT CUTOUT FIGURE (No background, seamlessly merged into app) */}
           <div className="relative w-full h-full flex items-end justify-center overflow-visible">
             <img 
-              src="/profile_cutout.jpg" 
+              src={processedPngUrl || "/profile_cutout.png"} 
               alt="Jeffrey N. K. Pappoe" 
               className="w-full h-full object-contain object-bottom filter drop-shadow-[0_0_35px_rgba(16,185,129,0.45)] drop-shadow-[0_0_60px_rgba(6,182,212,0.35)] transition-all duration-700 group-hover:scale-105 group-hover:drop-shadow-[0_0_50px_rgba(6,182,212,0.8)]"
               style={{
-                mixBlendMode: isDark ? 'screen' : 'normal',
-                maskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)',
-                WebkitMaskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)'
+                maskImage: 'linear-gradient(to bottom, black 88%, transparent 100%)',
+                WebkitMaskImage: 'linear-gradient(to bottom, black 88%, transparent 100%)'
               }}
               onError={(e) => {
-                e.target.src = "/profile.jpg";
+                e.target.src = "/profile_cutout.png";
               }}
             />
 
@@ -519,7 +636,7 @@ export default function HologramAvatar3D({
               </div>
               <button 
                 onClick={() => setSelectedNode(null)}
-                className="text-slate-400 hover:text-white font-mono text-xs px-2 py-0.5 rounded bg-slate-800"
+                className="text-slate-400 hover:text-white font-mono text-xs px-2 py-0.5 rounded bg-slate-800 cursor-pointer"
               >
                 ✕ CLOSE
               </button>
