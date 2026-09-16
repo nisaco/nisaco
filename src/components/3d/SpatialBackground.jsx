@@ -25,10 +25,13 @@ export default function SpatialBackground({ isDark }) {
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    const isSmallScreen = window.innerWidth < 768;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isSmallScreen ? 1.5 : 2));
     container.appendChild(renderer.domElement);
 
     // --- 3D PARTICLE FIELD (Cosmic Constellation) ---
     const particleCount = window.innerWidth < 768 ? 550 : 950; // Optimized for mobile
+    const particleCount = isSmallScreen ? 320 : 850; // Ultra-optimized for 60/120fps mobile
     const geometry = new THREE.BufferGeometry();
     const positions = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
