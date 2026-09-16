@@ -59,9 +59,6 @@ export default function HudHeader({
 
         {/* Center: Mission Tag */}
         <div className="hidden md:flex items-center gap-2">
-          <Sparkles size={11} className="text-cyan-400" />
-          <span className="uppercase text-slate-400 font-semibold tracking-widest text-[10px]">
-            ARCHITECTING FINTECH & CLOUD ECOSYSTEMS
           <Sparkles size={11} className="text-cyan-400 animate-pulse" />
           <span className="uppercase text-cyan-400/90 font-bold tracking-widest text-[10px]">
             "The Future Is Exciting,...READY?!"

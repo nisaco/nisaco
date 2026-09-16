@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   Globe, Server, Database, Briefcase, Terminal, 
-  Layers, Zap, Sparkles, Activity, ShieldCheck, Compass, Eye, Smartphone
   Layers, Zap, Sparkles, Activity, ShieldCheck, Eye
 } from 'lucide-react';
 
@@ -13,7 +12,6 @@ const ORBITAL_STACK = [
     category: 'Frontend Core',
     icon: Globe,
     ring: 1,
-    speed: 0.016,
     speed: 0.014,
     angleOffset: 0,
     color: '#06b6d4',
@@ -29,7 +27,6 @@ const ORBITAL_STACK = [
     category: 'Backend Core',
     icon: Server,
     ring: 1,
-    speed: 0.016,
     speed: 0.014,
     angleOffset: Math.PI,
     color: '#10b981',
@@ -45,7 +42,6 @@ const ORBITAL_STACK = [
     category: 'Payment Core',
     icon: Briefcase,
     ring: 2,
-    speed: -0.012,
     speed: -0.011,
     angleOffset: Math.PI / 3,
     color: '#3b82f6',
@@ -61,7 +57,6 @@ const ORBITAL_STACK = [
     category: 'Database Cluster',
     icon: Database,
     ring: 2,
-    speed: -0.012,
     speed: -0.011,
     angleOffset: (4 * Math.PI) / 3,
     color: '#10b981',
@@ -77,7 +72,6 @@ const ORBITAL_STACK = [
     category: 'System Design',
     icon: Terminal,
     ring: 3,
-    speed: 0.009,
     speed: 0.008,
     angleOffset: (2 * Math.PI) / 3,
     color: '#a855f7',
@@ -93,7 +87,6 @@ const ORBITAL_STACK = [
     category: 'Cloud Systems',
     icon: Layers,
     ring: 3,
-    speed: 0.009,
     speed: 0.008,
     angleOffset: (5 * Math.PI) / 3,
     color: '#f59e0b',
@@ -105,159 +98,36 @@ const ORBITAL_STACK = [
 ];
 
 export default function HologramAvatar3D({ 
-  avatarUrl, 
-  isDark, 
   avatarUrl = "/profile_cutout.png", 
   isDark = true, 
   onPlaySound, 
   onTriggerPulse 
 }) {
   const containerRef = useRef(null);
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const rigRef = useRef(null);
   const nodeRefs = useRef({});
   const laserRef = useRef(null);
 
   const [selectedNode, setSelectedNode] = useState(null);
-  const [time, setTime] = useState(0);
   const [speedMultiplier, setSpeedMultiplier] = useState(1);
   const [isScanning, setIsScanning] = useState(true);
   const [energyPulseActive, setEnergyPulseActive] = useState(false);
   const [isHoveringAvatar, setIsHoveringAvatar] = useState(false);
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
-  const [processedPngUrl, setProcessedPngUrl] = useState(null);
 
-  // --- AUTOMATED CANVAS ALPHA BACKGROUND REMOVER ---
-  // Converts any outer background pixels to 100% transparent PNG in real-time
-  useEffect(() => {
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.src = '/profile_cutout.jpg';
-    img.onload = () => {
-      try {
-        const canvas = document.createElement('canvas');
-        const w = img.naturalWidth || img.width;
-        const h = img.naturalHeight || img.height;
-        canvas.width = w;
-        canvas.height = h;
-        const ctx = canvas.getContext('2d', { willReadFrequently: true });
-        ctx.drawImage(img, 0, 0);
   const speedRef = useRef(speedMultiplier);
   speedRef.current = speedMultiplier;
 
-        const imgData = ctx.getImageData(0, 0, w, h);
-        const data = imgData.data;
   const selectedNodeRef = useRef(selectedNode);
   selectedNodeRef.current = selectedNode;
 
-        // BFS Flood Fill from all outer boundaries
-        const visited = new Uint8Array(w * h);
-        const queue = new Int32Array(w * h);
-        let head = 0;
-        let tail = 0;
-
-        const isBackgroundPixel = (idx) => {
-          const r = data[idx];
-          const g = data[idx + 1];
-          const b = data[idx + 2];
-          return r < 38 && g < 38 && b < 38;
-        };
-
-        // Seed top and bottom borders
-        for (let x = 0; x < w; x++) {
-          const topIdx = (0 * w + x) * 4;
-          if (isBackgroundPixel(topIdx)) {
-            visited[0 * w + x] = 1;
-            queue[tail++] = 0 * w + x;
-          }
-          const btmIdx = ((h - 1) * w + x) * 4;
-          if (isBackgroundPixel(btmIdx)) {
-            visited[(h - 1) * w + x] = 1;
-            queue[tail++] = (h - 1) * w + x;
-          }
-        }
-
-        // Seed left and right borders
-        for (let y = 0; y < h; y++) {
-          const leftIdx = (y * w + 0) * 4;
-          if (!visited[y * w + 0] && isBackgroundPixel(leftIdx)) {
-            visited[y * w + 0] = 1;
-            queue[tail++] = y * w + 0;
-          }
-          const rightIdx = (y * w + (w - 1)) * 4;
-          if (!visited[y * w + (w - 1)] && isBackgroundPixel(rightIdx)) {
-            visited[y * w + (w - 1)] = 1;
-            queue[tail++] = y * w + (w - 1);
-          }
-        }
-
-        // Flood fill to clear alpha
-        while (head < tail) {
-          const curr = queue[head++];
-          const cx = curr % w;
-          const cy = (curr / w) | 0;
-
-          // Set 100% transparent
-          data[curr * 4 + 3] = 0;
-
-          const neighbors = [
-            cy > 0 ? (cy - 1) * w + cx : -1,
-            cy < h - 1 ? (cy + 1) * w + cx : -1,
-            cx > 0 ? cy * w + (cx - 1) : -1,
-            cx < w - 1 ? cy * w + (cx + 1) : -1
-          ];
-
-          for (let i = 0; i < 4; i++) {
-            const n = neighbors[i];
-            if (n !== -1 && !visited[n]) {
-              const nIdx = n * 4;
-              if (isBackgroundPixel(nIdx)) {
-                visited[n] = 1;
-                queue[tail++] = n;
-              }
-            }
-          }
-        }
-
-        // Smooth edge antialiasing
-        for (let y = 1; y < h - 1; y++) {
-          for (let x = 1; x < w - 1; x++) {
-            const idx = (y * w + x) * 4;
-            if (data[idx + 3] > 0) {
-              const hasTransNeighbor = 
-                data[((y - 1) * w + x) * 4 + 3] === 0 ||
-                data[((y + 1) * w + x) * 4 + 3] === 0 ||
-                data[(y * w + (x - 1)) * 4 + 3] === 0 ||
-                data[(y * w + (x + 1)) * 4 + 3] === 0;
-
-              if (hasTransNeighbor) {
-                const brightness = Math.max(data[idx], data[idx + 1], data[idx + 2]);
-                if (brightness < 60) {
-                  data[idx + 3] = Math.min(255, Math.max(0, (brightness - 10) * 5));
-                }
-              }
-            }
-          }
-        }
-
-        ctx.putImageData(imgData, 0, 0);
-        setProcessedPngUrl(canvas.toDataURL('image/png'));
-      } catch (err) {
-        console.error("Canvas cutout processing:", err);
-      }
-    };
-  }, []);
-
-  // Responsive window resize tracker
   // Track window resize
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
     window.addEventListener('resize', handleResize, { passive: true });
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // --- ORBIT ROTATION TICKER ---
   const isMobile = windowWidth < 640;
   const isTablet = windowWidth >= 640 && windowWidth < 1024;
 
@@ -278,58 +148,35 @@ export default function HologramAvatar3D({
 
   // --- 100% GPU COMPOSITED 120FPS ANIMATION LOOP (DIRECT DOM TRANSFORMS) ---
   useEffect(() => {
-    let animationFrame;
-    const updateOrbit = () => {
-      setTime((prev) => prev + 0.02 * speedMultiplier);
-      animationFrame = requestAnimationFrame(updateOrbit);
-    };
-    animationFrame = requestAnimationFrame(updateOrbit);
-    return () => cancelAnimationFrame(animationFrame);
-  }, [speedMultiplier]);
     let animationFrameId;
     let time = 0;
 
-  // --- MULTI-INPUT 3D SPATIAL ORIENTATION (Mouse + Mobile Gyroscope + Touch Drag) ---
-  useEffect(() => {
-    let targetX = 0;
-    let targetY = 0;
-    let currentX = 0;
-    let currentY = 0;
     let targetTiltX = 0;
     let targetTiltY = 0;
     let currentTiltX = 0;
     let currentTiltY = 0;
     let hasGyro = false;
 
-    // 1. Desktop Mouse Move
     // Desktop Mouse Move
     const handleMouseMove = (e) => {
       if (hasGyro || !containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
-      targetX = ((e.clientX - centerX) / (rect.width / 2)) * 24;
-      targetY = -((e.clientY - centerY) / (rect.height / 2)) * 20;
       targetTiltX = ((e.clientX - centerX) / (rect.width / 2)) * 20;
       targetTiltY = -((e.clientY - centerY) / (rect.height / 2)) * 16;
     };
 
-    // 2. Mobile Phone Gyroscope (Device Orientation)
     // Mobile Phone Gyroscope (Device Orientation)
     const handleDeviceOrientation = (e) => {
       if (e.gamma === null || e.beta === null) return;
       hasGyro = true;
-      const gamma = Math.max(-45, Math.min(45, e.gamma || 0));
-      const beta = Math.max(-45, Math.min(45, (e.beta || 0) - 45));
-      targetX = (gamma / 35) * 26;
-      targetY = -(beta / 35) * 22;
       const gamma = Math.max(-40, Math.min(40, e.gamma || 0));
       const beta = Math.max(-40, Math.min(40, (e.beta || 0) - 45));
       targetTiltX = (gamma / 30) * 22;
       targetTiltY = -(beta / 30) * 18;
     };
 
-    // 3. Mobile Touch Dragging & Swiping
     // Mobile Touch Dragging & Swiping
     let touchStartX = 0;
     let touchStartY = 0;
@@ -341,10 +188,6 @@ export default function HologramAvatar3D({
     };
     const handleTouchMove = (e) => {
       if (e.touches.length === 1) {
-        const deltaX = (e.touches[0].clientX - touchStartX) / 10;
-        const deltaY = (e.touches[0].clientY - touchStartY) / 10;
-        targetX = Math.max(-30, Math.min(30, deltaX));
-        targetY = Math.max(-25, Math.min(25, -deltaY));
         const deltaX = (e.touches[0].clientX - touchStartX) / 12;
         const deltaY = (e.touches[0].clientY - touchStartY) / 12;
         targetTiltX = Math.max(-25, Math.min(25, deltaX));
@@ -352,8 +195,6 @@ export default function HologramAvatar3D({
       }
     };
     const handleTouchEnd = () => {
-      targetX = 0;
-      targetY = 0;
       targetTiltX = 0;
       targetTiltY = 0;
     };
@@ -370,12 +211,6 @@ export default function HologramAvatar3D({
       window.addEventListener('deviceorientation', handleDeviceOrientation, { passive: true });
     }
 
-    let frameId;
-    const updateTilt = () => {
-      currentX += (targetX - currentX) * 0.08;
-      currentY += (targetY - currentY) * 0.08;
-      setTilt({ x: currentX, y: currentY });
-      frameId = requestAnimationFrame(updateTilt);
     // High performance frame ticker (NO React state re-renders)
     const renderLoop = () => {
       time += 0.016 * speedRef.current;
@@ -417,12 +252,10 @@ export default function HologramAvatar3D({
 
       animationFrameId = requestAnimationFrame(renderLoop);
     };
-    frameId = requestAnimationFrame(updateTilt);
 
     animationFrameId = requestAnimationFrame(renderLoop);
 
     return () => {
-      cancelAnimationFrame(frameId);
       cancelAnimationFrame(animationFrameId);
       if (container) {
         container.removeEventListener('mousemove', handleMouseMove);
@@ -434,7 +267,6 @@ export default function HologramAvatar3D({
         window.removeEventListener('deviceorientation', handleDeviceOrientation);
       }
     };
-  }, []);
   }, [isMobile, isTablet]);
 
   // Quantum Pulse Trigger
@@ -445,25 +277,6 @@ export default function HologramAvatar3D({
     setTimeout(() => setEnergyPulseActive(false), 1200);
   };
 
-  // --- RESPONSIVE ORBIT RADII ---
-  const isMobile = windowWidth < 640;
-  const isTablet = windowWidth >= 640 && windowWidth < 1024;
-
-  const ringRadii = {
-    1: { 
-      rx: isMobile ? 120 : isTablet ? 155 : 185, 
-      ry: isMobile ? 45 : isTablet ? 58 : 68 
-    },
-    2: { 
-      rx: isMobile ? 160 : isTablet ? 205 : 245, 
-      ry: isMobile ? 60 : isTablet ? 76 : 90 
-    },
-    3: { 
-      rx: isMobile ? 198 : isTablet ? 255 : 305, 
-      ry: isMobile ? 74 : isTablet ? 95 : 112 
-    }
-  };
-
   return (
     <div 
       ref={containerRef}
@@ -472,12 +285,10 @@ export default function HologramAvatar3D({
     >
       {/* 3D Spatial Gyroscopic Rig */}
       <div 
-        className="relative w-full h-full flex items-center justify-center"
         ref={rigRef}
         className="relative w-full h-full flex items-center justify-center will-change-transform"
         style={{
           transformStyle: 'preserve-3d',
-          transform: `rotateX(${-tilt.y}deg) rotateY(${tilt.x}deg)`
           backfaceVisibility: 'hidden'
         }}
       >
@@ -485,7 +296,6 @@ export default function HologramAvatar3D({
         {/* 1. HOLOGRAPHIC QUANTUM BASE PEDESTAL & ENERGY RING         */}
         {/* ========================================================= */}
         <div 
-          className="absolute w-72 sm:w-96 lg:w-[450px] h-72 sm:h-96 lg:h-[450px] rounded-full pointer-events-none"
           className="absolute w-72 sm:w-96 lg:w-[450px] h-72 sm:h-96 lg:h-[450px] rounded-full pointer-events-none will-change-transform"
           style={{
             transform: `translateY(${isMobile ? '160px' : '200px'}) rotateX(75deg)`,
@@ -561,7 +371,6 @@ export default function HologramAvatar3D({
             if (onPlaySound) onPlaySound('hover');
           }}
           onMouseLeave={() => setIsHoveringAvatar(false)}
-          className="relative z-20 cursor-pointer group flex items-end justify-center"
           className="relative z-20 cursor-pointer group flex items-end justify-center will-change-transform"
           style={{
             transformStyle: 'preserve-3d',
@@ -579,11 +388,9 @@ export default function HologramAvatar3D({
             }}
           />
 
-          {/* THE 100% TRANSPARENT CUTOUT FIGURE (No background, seamlessly merged into app) */}
           {/* THE 100% TRANSPARENT CUTOUT FIGURE (Pristine transparent PNG) */}
           <div className="relative w-full h-full flex items-end justify-center overflow-visible">
             <img 
-              src={processedPngUrl || "/profile_cutout.png"} 
               src={avatarUrl} 
               alt="Jeffrey N. K. Pappoe" 
               className="w-full h-full object-contain object-bottom filter drop-shadow-[0_0_35px_rgba(16,185,129,0.45)] drop-shadow-[0_0_60px_rgba(6,182,212,0.35)] transition-all duration-700 group-hover:scale-105 group-hover:drop-shadow-[0_0_50px_rgba(6,182,212,0.8)]"
@@ -636,18 +443,6 @@ export default function HologramAvatar3D({
         {/* 5. REVOLVING CELESTIAL STACK NODES (ORBITING SATELLITES)  */}
         {/* ========================================================= */}
         {ORBITAL_STACK.map((node) => {
-          const currentAngle = time * (node.speed * 60) + node.angleOffset;
-          const rx = ringRadii[node.ring].rx;
-          const ry = ringRadii[node.ring].ry;
-
-          // 3D coordinates based on elliptical trajectory
-          const x = rx * Math.cos(currentAngle);
-          const y = ry * Math.sin(currentAngle);
-          const isFront = Math.sin(currentAngle) > 0;
-          const zDepth = isFront ? 45 : -45;
-          const scale = isFront ? (isMobile ? 0.95 : 1.1) : (isMobile ? 0.75 : 0.88);
-          const opacity = isFront ? 1 : 0.65;
-
           const isSelected = selectedNode?.id === node.id;
           const NodeIcon = node.icon;
 
@@ -663,12 +458,8 @@ export default function HologramAvatar3D({
               onMouseEnter={() => {
                 if (onPlaySound) onPlaySound('hover');
               }}
-              className="absolute cursor-pointer group transition-transform duration-150"
               className="absolute cursor-pointer group will-change-transform"
               style={{
-                transform: `translate3d(${x}px, ${y}px, ${zDepth}px) scale(${scale})`,
-                zIndex: isFront ? 35 : 10,
-                opacity: opacity
                 transformStyle: 'preserve-3d',
                 backfaceVisibility: 'hidden'
               }}
@@ -721,8 +512,6 @@ export default function HologramAvatar3D({
                     ref={laserRef}
                     x1="0" 
                     y1="0" 
-                    x2={-x} 
-                    y2={-y} 
                     x2="0" 
                     y2="0" 
                     stroke={node.color} 

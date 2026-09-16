@@ -114,7 +114,6 @@ export default function App() {
   const personalInfo = {
     name: "Jeffrey N. K. Pappoe",
     role: "Full Stack Developer & Entrepreneur",
-    tagline: "Building digital bridges for the African market & scalable fintech ecosystems.",
     tagline: "The Future Is Exciting,...READY?!",
     bio: "I am a software engineer focused on solving real-world problems through technology. I am currently a student at the University of Cape Coast, pursuing a Bachelor of Science in Computer Science. My expertise lies in building robust Fintech and E-commerce platforms that integrate complex APIs (like Paystack and Mobile Money) with user-friendly interfaces. I am also the founder and lead developer of AJEnterprise, a high-volume data reselling platform.",
     location: "Accra, Ghana",
@@ -276,10 +275,6 @@ export default function App() {
           {/* Left Hero Content */}
           <div className="lg:col-span-6 space-y-6 text-center lg:text-left">
             
-            {/* Status Cyber Badge */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border backdrop-blur-xl text-xs font-mono select-none animate-fadeIn border-emerald-500/40 bg-emerald-500/10 text-emerald-300 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
-              <Sparkles size={13} className="text-emerald-400" />
-              <span>SYSTEM READY // ACCRA, GHANA</span>
             {/* Status Cyber Badge & Prominent Dynamic Tagline */}
             <div className="flex flex-wrap items-center gap-2.5 justify-center lg:justify-start">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border backdrop-blur-xl text-xs font-mono select-none animate-fadeIn border-emerald-500/40 bg-emerald-500/10 text-emerald-300 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
@@ -301,11 +296,9 @@ export default function App() {
               for the modern world.
             </h1>
 
-            {/* Subtext */}
             {/* Subtext with Tagline */}
             <p className={`text-base sm:text-lg leading-relaxed max-w-xl mx-auto lg:mx-0 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
               Hello, I am <strong className={isDark ? 'text-white' : 'text-slate-900'}>{personalInfo.name}</strong>. 
-              A software engineer & entrepreneur creating high-throughput fintech platforms, automated payment gateways, and scalable cloud architectures.
               A full stack software architect & tech entrepreneur creating high-throughput fintech platforms, automated payment gateways, and scalable cloud ecosystems.
             </p>
 
