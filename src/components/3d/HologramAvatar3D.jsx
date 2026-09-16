@@ -1,24 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   Globe, Server, Database, Briefcase, Terminal, 
-  Layers, Zap, Sparkles, Activity, ShieldCheck, Compass, Eye
+  Layers, Zap, Sparkles, Activity, ShieldCheck, Compass, Eye, Smartphone
 } from 'lucide-react';
 
 const ORBITAL_STACK = [
   {
     id: 'react',
-    name: 'React & Modern UI',
+    name: 'React.js & Vite',
     short: 'React',
     category: 'Frontend Core',
     icon: Globe,
     ring: 1,
-    speed: 0.018,
+    speed: 0.016,
     angleOffset: 0,
-    color: '#06b6d4', // Cyan
-    glow: 'rgba(6, 182, 212, 0.5)',
+    color: '#06b6d4',
+    glow: 'rgba(6, 182, 212, 0.6)',
     mastery: '98%',
     experience: '3+ Years',
-    highlight: 'Built AJEnterprise & Logistics UI with high-speed rendering and responsive micro-interactions.'
+    highlight: 'Architecting high-speed reactive UI platforms with micro-animations and zero latency.'
   },
   {
     id: 'nodejs',
@@ -27,28 +27,28 @@ const ORBITAL_STACK = [
     category: 'Backend Core',
     icon: Server,
     ring: 1,
-    speed: 0.018,
+    speed: 0.016,
     angleOffset: Math.PI,
-    color: '#10b981', // Emerald
-    glow: 'rgba(16, 185, 129, 0.5)',
+    color: '#10b981',
+    glow: 'rgba(16, 185, 129, 0.6)',
     mastery: '95%',
     experience: '3+ Years',
-    highlight: 'Architected robust REST APIs, webhook listeners, and background task queue systems.'
+    highlight: 'Designing RESTful microservices, webhook listeners, and distributed queues.'
   },
   {
     id: 'paystack',
     name: 'Paystack & Fintech',
-    short: 'Fintech API',
-    category: 'Payment Architecture',
+    short: 'Paystack',
+    category: 'Payment Core',
     icon: Briefcase,
     ring: 2,
-    speed: -0.014,
+    speed: -0.012,
     angleOffset: Math.PI / 3,
-    color: '#3b82f6', // Blue
-    glow: 'rgba(59, 130, 246, 0.5)',
+    color: '#3b82f6',
+    glow: 'rgba(59, 130, 246, 0.6)',
     mastery: '96%',
     experience: '2+ Years',
-    highlight: 'Integrated automated mobile money, card payments, webhook verification, and instant wallet funding.'
+    highlight: 'Automating African mobile money, card payments, webhook security, and wallet ledgers.'
   },
   {
     id: 'mongodb',
@@ -57,43 +57,43 @@ const ORBITAL_STACK = [
     category: 'Database Cluster',
     icon: Database,
     ring: 2,
-    speed: -0.014,
+    speed: -0.012,
     angleOffset: (4 * Math.PI) / 3,
-    color: '#10b981', // Emerald
-    glow: 'rgba(16, 185, 129, 0.5)',
+    color: '#10b981',
+    glow: 'rgba(16, 185, 129, 0.6)',
     mastery: '92%',
     experience: '2+ Years',
-    highlight: 'Designed schema pipelines, indexing, aggregation pipelines, and secure cloud cluster migrations.'
+    highlight: 'High-availability document clusters, pipeline aggregations, and resilient indexing.'
   },
   {
     id: 'api',
     name: 'API Development',
-    short: 'API System',
-    category: 'Microservices',
+    short: 'APIs',
+    category: 'System Design',
     icon: Terminal,
     ring: 3,
-    speed: 0.01,
+    speed: 0.009,
     angleOffset: (2 * Math.PI) / 3,
-    color: '#a855f7', // Purple
-    glow: 'rgba(168, 85, 247, 0.5)',
+    color: '#a855f7',
+    glow: 'rgba(168, 85, 247, 0.6)',
     mastery: '94%',
     experience: '3+ Years',
-    highlight: 'Crafted resilient data pipelines connecting SMS, WhatsApp, Telecom data providers & custom CMS.'
+    highlight: 'Telephony & SMS gateways (Twilio), third-party telecom APIs, and webhooks.'
   },
   {
     id: 'saas',
-    name: 'SaaS Architecture',
-    short: 'SaaS Cloud',
-    category: 'System Design',
+    name: 'SaaS Platforms',
+    short: 'SaaS',
+    category: 'Cloud Systems',
     icon: Layers,
     ring: 3,
-    speed: 0.01,
+    speed: 0.009,
     angleOffset: (5 * Math.PI) / 3,
-    color: '#f59e0b', // Amber
-    glow: 'rgba(245, 158, 11, 0.5)',
+    color: '#f59e0b',
+    glow: 'rgba(245, 158, 11, 0.6)',
     mastery: '90%',
     experience: '2+ Years',
-    highlight: 'Scalable multi-tenant infrastructure with role-based access control and live telemetry.'
+    highlight: 'Multi-tenant infrastructure, analytics telemetry dashboards, and cloud deployment.'
   }
 ];
 
@@ -104,13 +104,21 @@ export default function HologramAvatar3D({
   onTriggerPulse 
 }) {
   const containerRef = useRef(null);
-  const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [selectedNode, setSelectedNode] = useState(null);
   const [time, setTime] = useState(0);
   const [speedMultiplier, setSpeedMultiplier] = useState(1);
   const [isScanning, setIsScanning] = useState(true);
   const [energyPulseActive, setEnergyPulseActive] = useState(false);
   const [isHoveringAvatar, setIsHoveringAvatar] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+
+  // Responsive window resize tracker
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // --- ORBIT ROTATION TICKER ---
   useEffect(() => {
@@ -123,23 +131,92 @@ export default function HologramAvatar3D({
     return () => cancelAnimationFrame(animationFrame);
   }, [speedMultiplier]);
 
-  // --- 3D TILT WITH SMOOTH INERTIA ---
-  const handleMouseMove = (e) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    const x = (e.clientX - centerX) / (rect.width / 2);
-    const y = (e.clientY - centerY) / (rect.height / 2);
-    setMouseOffset({ x: Math.max(-1, Math.min(1, x)), y: Math.max(-1, Math.min(1, y)) });
-  };
+  // --- MULTI-INPUT 3D SPATIAL ORIENTATION (Mouse + Mobile Gyroscope + Touch Drag) ---
+  useEffect(() => {
+    let targetX = 0;
+    let targetY = 0;
+    let currentX = 0;
+    let currentY = 0;
+    let hasGyro = false;
 
-  const handleMouseLeave = () => {
-    setMouseOffset({ x: 0, y: 0 });
-    setIsHoveringAvatar(false);
-  };
+    // 1. Desktop Mouse Move
+    const handleMouseMove = (e) => {
+      if (hasGyro || !containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      targetX = ((e.clientX - centerX) / (rect.width / 2)) * 24; // tilt degrees
+      targetY = -((e.clientY - centerY) / (rect.height / 2)) * 20;
+    };
 
-  // --- QUANTUM PULSE DISCHARGE ---
+    // 2. Mobile Phone Gyroscope (Device Orientation)
+    const handleDeviceOrientation = (e) => {
+      if (e.gamma === null || e.beta === null) return;
+      hasGyro = true;
+      const gamma = Math.max(-45, Math.min(45, e.gamma || 0));
+      const beta = Math.max(-45, Math.min(45, (e.beta || 0) - 45));
+      targetX = (gamma / 35) * 26;
+      targetY = -(beta / 35) * 22;
+    };
+
+    // 3. Mobile Touch Dragging & Swiping
+    let touchStartX = 0;
+    let touchStartY = 0;
+    const handleTouchStart = (e) => {
+      if (e.touches.length === 1) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }
+    };
+    const handleTouchMove = (e) => {
+      if (e.touches.length === 1) {
+        const deltaX = (e.touches[0].clientX - touchStartX) / 10;
+        const deltaY = (e.touches[0].clientY - touchStartY) / 10;
+        targetX = Math.max(-30, Math.min(30, deltaX));
+        targetY = Math.max(-25, Math.min(25, -deltaY));
+      }
+    };
+    const handleTouchEnd = () => {
+      targetX = 0;
+      targetY = 0;
+    };
+
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener('mousemove', handleMouseMove, { passive: true });
+      container.addEventListener('touchstart', handleTouchStart, { passive: true });
+      container.addEventListener('touchmove', handleTouchMove, { passive: true });
+      container.addEventListener('touchend', handleTouchEnd, { passive: true });
+    }
+
+    if (window.DeviceOrientationEvent) {
+      window.addEventListener('deviceorientation', handleDeviceOrientation, { passive: true });
+    }
+
+    let frameId;
+    const updateTilt = () => {
+      currentX += (targetX - currentX) * 0.08;
+      currentY += (targetY - currentY) * 0.08;
+      setTilt({ x: currentX, y: currentY });
+      frameId = requestAnimationFrame(updateTilt);
+    };
+    frameId = requestAnimationFrame(updateTilt);
+
+    return () => {
+      cancelAnimationFrame(frameId);
+      if (container) {
+        container.removeEventListener('mousemove', handleMouseMove);
+        container.removeEventListener('touchstart', handleTouchStart);
+        container.removeEventListener('touchmove', handleTouchMove);
+        container.removeEventListener('touchend', handleTouchEnd);
+      }
+      if (window.DeviceOrientationEvent) {
+        window.removeEventListener('deviceorientation', handleDeviceOrientation);
+      }
+    };
+  }, []);
+
+  // Quantum Pulse Trigger
   const triggerQuantumDischarge = () => {
     setEnergyPulseActive(true);
     if (onPlaySound) onPlaySound('pulse');
@@ -147,100 +224,110 @@ export default function HologramAvatar3D({
     setTimeout(() => setEnergyPulseActive(false), 1200);
   };
 
-  // Orbit Dimensions (scaled for high responsiveness)
+  // --- RESPONSIVE ORBIT RADII ---
+  const isMobile = windowWidth < 640;
+  const isTablet = windowWidth >= 640 && windowWidth < 1024;
+
   const ringRadii = {
-    1: { rx: 145, ry: 55 },
-    2: { rx: 195, ry: 75 },
-    3: { rx: 245, ry: 95 }
+    1: { 
+      rx: isMobile ? 120 : isTablet ? 155 : 185, 
+      ry: isMobile ? 45 : isTablet ? 58 : 68 
+    },
+    2: { 
+      rx: isMobile ? 160 : isTablet ? 205 : 245, 
+      ry: isMobile ? 60 : isTablet ? 76 : 90 
+    },
+    3: { 
+      rx: isMobile ? 198 : isTablet ? 255 : 305, 
+      ry: isMobile ? 74 : isTablet ? 95 : 112 
+    }
   };
 
   return (
     <div 
       ref={containerRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      className="relative w-full max-w-[540px] h-[520px] md:h-[580px] flex items-center justify-center select-none"
+      className="relative w-full max-w-[680px] h-[520px] sm:h-[600px] lg:h-[660px] flex items-center justify-center select-none"
       style={{ perspective: 1200 }}
     >
-      {/* --- 3D GYROSCOPIC TILT RIG --- */}
+      {/* 3D Spatial Gyroscopic Rig */}
       <div 
-        className="relative w-full h-full flex items-center justify-center transition-transform duration-300 ease-out"
+        className="relative w-full h-full flex items-center justify-center"
         style={{
           transformStyle: 'preserve-3d',
-          transform: `rotateX(${-mouseOffset.y * 18}deg) rotateY(${mouseOffset.x * 22}deg)`
+          transform: `rotateX(${-tilt.y}deg) rotateY(${tilt.x}deg)`
         }}
       >
         {/* ========================================================= */}
-        {/* 1. HOLOGRAPHIC QUANTUM FLOOR & SCAN RINGS                */}
+        {/* 1. HOLOGRAPHIC QUANTUM BASE PEDESTAL & ENERGY RING         */}
         {/* ========================================================= */}
         <div 
-          className="absolute w-80 h-80 rounded-full border border-emerald-500/20 pointer-events-none"
+          className="absolute w-72 sm:w-96 lg:w-[450px] h-72 sm:h-96 lg:h-[450px] rounded-full pointer-events-none"
           style={{
-            transform: 'translateY(180px) rotateX(75deg)',
-            background: 'radial-gradient(circle, rgba(16,185,129,0.15) 0%, rgba(6,182,212,0.05) 50%, transparent 80%)',
-            boxShadow: '0 0 40px rgba(16,185,129,0.2)'
+            transform: `translateY(${isMobile ? '160px' : '200px'}) rotateX(75deg)`,
+            background: 'radial-gradient(circle, rgba(16,185,129,0.25) 0%, rgba(6,182,212,0.1) 45%, transparent 75%)',
+            boxShadow: '0 0 60px rgba(16,185,129,0.3)'
           }}
         >
-          {/* Animated concentric rings on the hologram base */}
-          <div className="absolute inset-4 rounded-full border border-dashed border-cyan-500/30 animate-[spin_20s_linear_infinite]" />
-          <div className="absolute inset-10 rounded-full border border-emerald-400/40 animate-[spin_12s_linear_infinite_reverse]" />
-          <div className="absolute inset-0 flex items-center justify-center font-mono text-[9px] text-emerald-400/60 tracking-widest">
-            QUANTUM // CORE 5.60°N
+          <div className="absolute inset-4 rounded-full border border-dashed border-cyan-400/40 animate-[spin_24s_linear_infinite]" />
+          <div className="absolute inset-10 rounded-full border border-emerald-400/50 animate-[spin_16s_linear_infinite_reverse]" />
+          <div className="absolute inset-16 rounded-full border border-dotted border-purple-400/30 animate-[spin_30s_linear_infinite]" />
+          <div className="absolute inset-0 flex items-center justify-center font-mono text-[10px] sm:text-xs text-emerald-400/80 tracking-widest uppercase font-bold">
+            JEFFREY PAPPOE // QUANTUM CORE
           </div>
         </div>
 
         {/* ========================================================= */}
-        {/* 2. THREE 3D INCLINED ORBITAL TRACKS                       */}
+        {/* 2. THREE INCLINED 3D CELESTIAL ORBITAL TRACKS             */}
         {/* ========================================================= */}
         <div 
           className="absolute inset-0 flex items-center justify-center pointer-events-none"
-          style={{ transformStyle: 'preserve-3d', transform: 'rotateX(68deg) rotateZ(-18deg)' }}
+          style={{ transformStyle: 'preserve-3d', transform: 'rotateX(68deg) rotateZ(-16deg)' }}
         >
           {/* Ring 1 */}
           <div 
-            className="absolute rounded-full border border-cyan-500/25 border-dashed"
+            className="absolute rounded-full border border-cyan-400/30 border-dashed"
             style={{
               width: `${ringRadii[1].rx * 2}px`,
               height: `${ringRadii[1].ry * 2.8}px`,
-              boxShadow: '0 0 20px rgba(6,182,212,0.15)'
+              boxShadow: '0 0 25px rgba(6,182,212,0.2)'
             }}
           />
           {/* Ring 2 */}
           <div 
-            className="absolute rounded-full border border-emerald-500/25"
+            className="absolute rounded-full border border-emerald-400/30"
             style={{
               width: `${ringRadii[2].rx * 2}px`,
               height: `${ringRadii[2].ry * 2.8}px`,
-              boxShadow: '0 0 25px rgba(16,185,129,0.15)'
+              boxShadow: '0 0 30px rgba(16,185,129,0.2)'
             }}
           />
           {/* Ring 3 */}
           <div 
-            className="absolute rounded-full border border-purple-500/20 border-dotted"
+            className="absolute rounded-full border border-purple-400/25 border-dotted"
             style={{
               width: `${ringRadii[3].rx * 2}px`,
               height: `${ringRadii[3].ry * 2.8}px`,
-              boxShadow: '0 0 30px rgba(168,85,247,0.12)'
+              boxShadow: '0 0 35px rgba(168,85,247,0.18)'
             }}
           />
         </div>
 
         {/* ========================================================= */}
-        {/* 3. SHOCKWAVE / ENERGY PULSE BURST                         */}
+        {/* 3. SHOCKWAVE ENERGY DISCHARGE PULSE                       */}
         {/* ========================================================= */}
         {energyPulseActive && (
           <div 
-            className="absolute z-30 rounded-full border-2 border-cyan-400 pointer-events-none animate-ping"
+            className="absolute z-30 rounded-full border-2 border-cyan-300 pointer-events-none animate-ping"
             style={{
-              width: '320px',
-              height: '320px',
-              background: 'radial-gradient(circle, rgba(6,182,212,0.4) 0%, rgba(16,185,129,0.2) 60%, transparent 80%)'
+              width: isMobile ? '280px' : '440px',
+              height: isMobile ? '280px' : '440px',
+              background: 'radial-gradient(circle, rgba(6,182,212,0.5) 0%, rgba(16,185,129,0.3) 50%, transparent 80%)'
             }}
           />
         )}
 
         {/* ========================================================= */}
-        {/* 4. CENTRAL HOLOGRAPHIC AVATAR POD ("3D ME")               */}
+        {/* 4. THE PROMINENT FIGURE-ONLY HOLOGRAPHIC AVATAR ("3D ME")  */}
         {/* ========================================================= */}
         <div 
           onClick={triggerQuantumDischarge}
@@ -248,110 +335,90 @@ export default function HologramAvatar3D({
             setIsHoveringAvatar(true);
             if (onPlaySound) onPlaySound('hover');
           }}
-          className="relative z-20 w-64 h-64 md:w-76 md:h-76 cursor-pointer group flex items-center justify-center"
+          onMouseLeave={() => setIsHoveringAvatar(false)}
+          className="relative z-20 cursor-pointer group flex items-end justify-center"
           style={{
             transformStyle: 'preserve-3d',
-            transform: 'translateZ(20px)'
+            transform: 'translateZ(25px)',
+            width: isMobile ? '260px' : isTablet ? '330px' : '390px',
+            height: isMobile ? '380px' : isTablet ? '480px' : '550px'
           }}
           title="Click to discharge Quantum Energy"
         >
-          {/* Multi-layered Glass Hologram Shield */}
+          {/* Holographic Glowing Aura Silhouette behind Figure */}
           <div 
-            className="absolute inset-0 rounded-3xl p-1 transition-all duration-500"
+            className="absolute inset-0 rounded-full blur-3xl opacity-40 group-hover:opacity-70 transition-opacity duration-700 pointer-events-none"
             style={{
-              background: isDark 
-                ? 'linear-gradient(135deg, rgba(16,185,129,0.6) 0%, rgba(6,182,212,0.3) 50%, rgba(168,85,247,0.4) 100%)' 
-                : 'linear-gradient(135deg, rgba(37,99,235,0.7) 0%, rgba(6,182,212,0.4) 50%, rgba(99,102,241,0.5) 100%)',
-              boxShadow: isDark 
-                ? '0 0 50px rgba(16,185,129,0.3), inset 0 0 30px rgba(6,182,212,0.2)' 
-                : '0 0 50px rgba(37,99,235,0.25), inset 0 0 30px rgba(6,182,212,0.15)'
+              background: 'radial-gradient(ellipse at center, rgba(16,185,129,0.6) 0%, rgba(6,182,212,0.4) 40%, rgba(59,130,246,0.2) 70%, transparent 85%)'
             }}
-          >
-            {/* Inner Frame */}
-            <div className={`w-full h-full rounded-[22px] overflow-hidden relative ${isDark ? 'bg-slate-950' : 'bg-slate-900'}`}>
-              
-              {/* Avatar Portrait */}
-              <img 
-                src={avatarUrl || "/profile.jpg"} 
-                alt="Jeffrey N. K. Pappoe" 
-                className="w-full h-full object-cover object-top filter brightness-105 contrast-110 transition-transform duration-700 group-hover:scale-110"
-                onError={(e) => {
-                  e.target.src = "/profile.jpg.jpg";
-                }}
-              />
+          />
 
-              {/* Holographic Cyan & Emerald Color Overlay */}
+          {/* THE CUTOUT FIGURE (100% Isolated Body) */}
+          <div className="relative w-full h-full flex items-end justify-center overflow-visible">
+            <img 
+              src="/profile_cutout.jpg" 
+              alt="Jeffrey N. K. Pappoe" 
+              className="w-full h-full object-contain object-bottom filter drop-shadow-[0_0_35px_rgba(16,185,129,0.45)] drop-shadow-[0_0_60px_rgba(6,182,212,0.35)] transition-all duration-700 group-hover:scale-105 group-hover:drop-shadow-[0_0_50px_rgba(6,182,212,0.8)]"
+              style={{
+                mixBlendMode: isDark ? 'screen' : 'normal',
+                maskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)',
+                WebkitMaskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)'
+              }}
+              onError={(e) => {
+                e.target.src = "/profile.jpg";
+              }}
+            />
+
+            {/* Vertical Laser Scanner sweeping directly across figure */}
+            {isScanning && (
               <div 
-                className="absolute inset-0 pointer-events-none mix-blend-color opacity-30"
+                className="absolute left-4 right-4 h-1 bg-gradient-to-r from-transparent via-cyan-300 to-transparent pointer-events-none shadow-[0_0_20px_#06b6d4]"
                 style={{
-                  background: 'linear-gradient(180deg, rgba(6,182,212,0.4) 0%, rgba(16,185,129,0.5) 100%)'
+                  animation: 'laserScan 3.2s ease-in-out infinite'
                 }}
               />
+            )}
 
-              {/* Hologram Cyber Grid Scanlines */}
-              <div 
-                className="absolute inset-0 pointer-events-none opacity-25"
-                style={{
-                  backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,180,0.25) 2px, rgba(0,255,180,0.25) 4px)'
-                }}
-              />
-
-              {/* Vertical Laser Scanner Beam */}
-              {isScanning && (
-                <div 
-                  className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-cyan-300 to-transparent pointer-events-none shadow-[0_0_15px_#06b6d4]"
-                  style={{
-                    animation: 'laserScan 3.5s ease-in-out infinite'
-                  }}
-                />
-              )}
-
-              {/* Corner HUD Reticles */}
-              <div className="absolute top-2 left-2 w-3 h-3 border-t-2 border-l-2 border-emerald-400 pointer-events-none" />
-              <div className="absolute top-2 right-2 w-3 h-3 border-t-2 border-r-2 border-cyan-400 pointer-events-none" />
-              <div className="absolute bottom-2 left-2 w-3 h-3 border-b-2 border-l-2 border-cyan-400 pointer-events-none" />
-              <div className="absolute bottom-2 right-2 w-3 h-3 border-b-2 border-r-2 border-emerald-400 pointer-events-none" />
-
-              {/* Interactive Holographic Hand / Energy Reach Indicator (Spatial extension) */}
-              <div 
-                className={`absolute inset-0 flex flex-col items-center justify-center bg-black/40 backdrop-blur-[2px] transition-opacity duration-300 ${isHoveringAvatar ? 'opacity-100' : 'opacity-0'} pointer-events-none`}
-              >
-                <div className="p-3 rounded-full bg-emerald-500/30 border border-emerald-400 text-emerald-300 shadow-[0_0_25px_#10b981] animate-bounce">
-                  <Zap size={28} className="animate-pulse" />
-                </div>
-                <span className="mt-2 font-mono text-[11px] text-cyan-300 font-bold tracking-wider uppercase px-2 py-1 rounded bg-black/60 border border-cyan-500/40">
-                  ⚡ DISCHARGE ENERGY
-                </span>
+            {/* Reaching Quantum Pulse Indicator (Extends outward in 3D) */}
+            <div 
+              className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center transition-opacity duration-300 ${isHoveringAvatar ? 'opacity-100' : 'opacity-0'} pointer-events-none`}
+              style={{ transform: 'translate3d(-50%, -50%, 60px)' }}
+            >
+              <div className="p-3.5 rounded-full bg-emerald-500/40 border border-emerald-300 text-emerald-200 shadow-[0_0_35px_#10b981] animate-bounce">
+                <Zap size={30} className="animate-pulse" />
               </div>
+              <span className="mt-2 font-mono text-[10px] sm:text-xs text-cyan-300 font-bold tracking-wider uppercase px-3 py-1 rounded-full bg-slate-950/90 border border-cyan-400/60 shadow-xl">
+                ⚡ DISCHARGE QUANTUM PULSE
+              </span>
             </div>
           </div>
 
-          {/* Floating Status Pill */}
+          {/* Floating Live Telemetry Badge Beneath Avatar */}
           <div 
-            className="absolute -bottom-4 px-4 py-1.5 rounded-full bg-slate-950/90 border border-emerald-500/50 backdrop-blur-md flex items-center gap-2 shadow-[0_0_20px_rgba(16,185,129,0.3)] z-30"
-            style={{ transform: 'translateZ(40px)' }}
+            className="absolute -bottom-2 px-4 py-1.5 rounded-full bg-slate-950/95 border border-emerald-500/60 backdrop-blur-xl flex items-center gap-2 shadow-[0_0_25px_rgba(16,185,129,0.4)] z-30 pointer-events-auto"
+            style={{ transform: 'translateZ(50px)' }}
           >
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-            <span className="font-mono text-xs font-bold text-white tracking-wider flex items-center gap-1">
-              ARCHITECT // ONLINE
+            <span className="font-mono text-xs font-bold text-white tracking-wider">
+              JEFFREY // ARCHITECT ONLINE
             </span>
           </div>
         </div>
 
         {/* ========================================================= */}
-        {/* 5. REVOLVING CELESTIAL STACK NODES (ORBITING PLANETS)     */}
+        {/* 5. REVOLVING CELESTIAL STACK NODES (ORBITING SATELLITES)  */}
         {/* ========================================================= */}
         {ORBITAL_STACK.map((node) => {
           const currentAngle = time * (node.speed * 60) + node.angleOffset;
           const rx = ringRadii[node.ring].rx;
           const ry = ringRadii[node.ring].ry;
 
-          // 3D coordinates based on elliptical rotation
+          // 3D coordinates based on elliptical trajectory
           const x = rx * Math.cos(currentAngle);
           const y = ry * Math.sin(currentAngle);
           const isFront = Math.sin(currentAngle) > 0;
-          const zDepth = isFront ? 40 : -40;
-          const scale = isFront ? 1.05 : 0.85;
+          const zDepth = isFront ? 45 : -45;
+          const scale = isFront ? (isMobile ? 0.95 : 1.1) : (isMobile ? 0.75 : 0.88);
           const opacity = isFront ? 1 : 0.65;
 
           const isSelected = selectedNode?.id === node.id;
@@ -368,52 +435,52 @@ export default function HologramAvatar3D({
               onMouseEnter={() => {
                 if (onPlaySound) onPlaySound('hover');
               }}
-              className="absolute z-25 cursor-pointer group transition-transform duration-150"
+              className="absolute cursor-pointer group transition-transform duration-150"
               style={{
                 transform: `translate3d(${x}px, ${y}px, ${zDepth}px) scale(${scale})`,
                 zIndex: isFront ? 35 : 10,
                 opacity: opacity
               }}
             >
-              {/* Orbital Planet Node */}
+              {/* Orbital Satellite Capsule */}
               <div 
-                className={`relative p-3 rounded-2xl backdrop-blur-xl border transition-all duration-300 flex items-center gap-2.5 ${
+                className={`relative p-2 sm:p-2.5 rounded-2xl backdrop-blur-2xl border transition-all duration-300 flex items-center gap-2 ${
                   isSelected 
-                    ? 'ring-2 ring-cyan-400 scale-110 shadow-[0_0_30px_rgba(6,182,212,0.8)]' 
-                    : 'hover:scale-115 hover:shadow-[0_0_25px_' + node.glow + ']'
+                    ? 'ring-2 ring-cyan-300 scale-115 shadow-[0_0_35px_rgba(6,182,212,0.9)]' 
+                    : 'hover:scale-120 hover:shadow-[0_0_30px_' + node.glow + ']'
                 }`}
                 style={{
-                  backgroundColor: isDark ? 'rgba(15, 23, 42, 0.85)' : 'rgba(255, 255, 255, 0.9)',
+                  backgroundColor: isDark ? 'rgba(10, 16, 31, 0.92)' : 'rgba(255, 255, 255, 0.95)',
                   borderColor: node.color,
-                  boxShadow: `0 0 15px ${node.glow}`
+                  boxShadow: `0 0 18px ${node.glow}`
                 }}
               >
                 {/* Node Icon */}
                 <div 
-                  className="w-8 h-8 rounded-xl flex items-center justify-center text-white transition-transform duration-300 group-hover:rotate-12"
+                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-white transition-transform duration-300 group-hover:rotate-12 shadow-md"
                   style={{ backgroundColor: node.color }}
                 >
-                  <NodeIcon size={16} />
+                  <NodeIcon size={isMobile ? 14 : 16} />
                 </div>
 
-                {/* Node Label (Hidden on small screens unless active) */}
-                <div className="hidden sm:block text-left pr-1">
-                  <div className="font-mono text-[10px] uppercase tracking-wider text-slate-400 font-semibold">
+                {/* Node Label */}
+                <div className="text-left pr-1">
+                  <div className="font-mono text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-400 font-semibold">
                     {node.short}
                   </div>
-                  <div className={`font-bold text-xs ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                  <div className={`font-bold text-[11px] sm:text-xs ${isDark ? 'text-white' : 'text-slate-900'}`}>
                     {node.mastery}
                   </div>
                 </div>
 
-                {/* Pulsing Core Ring */}
+                {/* Active Pulsing Indicator */}
                 <span 
-                  className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full"
+                  className="absolute -top-1 -right-1 w-2 h-2 rounded-full"
                   style={{ backgroundColor: node.color }}
                 />
               </div>
 
-              {/* Energy Tether Line to Avatar when Selected */}
+              {/* Laser Tether Line to Avatar Center */}
               {isSelected && (
                 <svg 
                   className="absolute top-1/2 left-1/2 pointer-events-none overflow-visible -z-10"
@@ -425,7 +492,7 @@ export default function HologramAvatar3D({
                     x2={-x} 
                     y2={-y} 
                     stroke={node.color} 
-                    strokeWidth="2" 
+                    strokeWidth="2.5" 
                     strokeDasharray="4 4"
                     className="animate-pulse"
                   />
@@ -436,16 +503,16 @@ export default function HologramAvatar3D({
         })}
 
         {/* ========================================================= */}
-        {/* 6. SPATIAL TELEMETRY POPUP HUD (WHEN A TECH NODE IS ACTIVE) */}
+        {/* 6. SPATIAL HUD TELEMETRY POPUP (WHEN A NODE IS CLICKED)   */}
         {/* ========================================================= */}
         {selectedNode && (
           <div 
-            className="absolute top-full mt-6 w-80 md:w-96 p-4 rounded-2xl bg-slate-950/95 border border-cyan-500/60 shadow-[0_0_35px_rgba(6,182,212,0.3)] backdrop-blur-2xl z-40 text-left animate-fadeIn"
-            style={{ transform: 'translateZ(60px)' }}
+            className="absolute top-full mt-4 w-76 sm:w-96 p-4 rounded-2xl bg-slate-950/95 border border-cyan-400/70 shadow-[0_0_40px_rgba(6,182,212,0.4)] backdrop-blur-2xl z-40 text-left animate-fadeIn"
+            style={{ transform: 'translateZ(70px)' }}
           >
             <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-3">
               <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping" />
+                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
                 <span className="font-mono text-xs font-bold text-cyan-400 uppercase tracking-wider">
                   TELEMETRY // {selectedNode.category}
                 </span>
@@ -463,15 +530,15 @@ export default function HologramAvatar3D({
                 className="p-2.5 rounded-xl text-white mt-1 shadow-lg"
                 style={{ backgroundColor: selectedNode.color }}
               >
-                {React.createElement(selectedNode.icon, { size: 20 })}
+                {React.createElement(selectedNode.icon, { size: 18 })}
               </div>
               <div className="flex-1">
-                <h4 className="font-bold text-base text-white">{selectedNode.name}</h4>
-                <div className="flex items-center gap-3 font-mono text-xs text-slate-400 mt-0.5 mb-2">
+                <h4 className="font-bold text-sm sm:text-base text-white">{selectedNode.name}</h4>
+                <div className="flex items-center gap-3 font-mono text-[11px] text-slate-400 mt-0.5 mb-2">
                   <span>⚡ Mastery: <strong className="text-emerald-400">{selectedNode.mastery}</strong></span>
                   <span>⌛ Exp: <strong className="text-cyan-400">{selectedNode.experience}</strong></span>
                 </div>
-                <p className="text-xs text-slate-300 leading-relaxed bg-slate-900/80 p-2.5 rounded-lg border border-slate-800">
+                <p className="text-xs text-slate-300 leading-relaxed bg-slate-900/90 p-2.5 rounded-lg border border-slate-800">
                   {selectedNode.highlight}
                 </p>
               </div>
@@ -483,16 +550,16 @@ export default function HologramAvatar3D({
       {/* ========================================================= */}
       {/* 7. HOLOGRAM CONTROLS HUD (BOTTOM ACTION BAR)             */}
       {/* ========================================================= */}
-      <div className="absolute -bottom-8 md:-bottom-12 flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-950/80 border border-slate-800/80 backdrop-blur-xl text-slate-300 text-xs font-mono z-30">
+      <div className="absolute -bottom-10 sm:-bottom-12 flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-950/90 border border-slate-800 backdrop-blur-xl text-slate-300 text-[11px] font-mono z-30">
         <button 
           onClick={() => {
             setSpeedMultiplier(prev => prev === 1 ? 2.5 : prev === 2.5 ? 0 : 1);
             if (onPlaySound) onPlaySound('click');
           }}
-          className="px-2.5 py-1 rounded-md hover:bg-slate-800 hover:text-cyan-400 transition flex items-center gap-1.5"
+          className="px-2 py-0.5 rounded-md hover:bg-slate-800 hover:text-cyan-400 transition flex items-center gap-1.5 cursor-pointer"
         >
           <Activity size={12} className={speedMultiplier > 1 ? "text-emerald-400 animate-spin" : "text-cyan-400"} />
-          <span>ORBIT: {speedMultiplier === 0 ? 'PAUSED' : speedMultiplier === 2.5 ? 'WARP (2.5x)' : 'NORMAL (1x)'}</span>
+          <span>ORBIT: {speedMultiplier === 0 ? 'PAUSED' : speedMultiplier === 2.5 ? 'WARP' : 'NORMAL'}</span>
         </button>
 
         <span className="text-slate-700">|</span>
@@ -502,26 +569,25 @@ export default function HologramAvatar3D({
             setIsScanning(prev => !prev);
             if (onPlaySound) onPlaySound('click');
           }}
-          className="px-2.5 py-1 rounded-md hover:bg-slate-800 hover:text-emerald-400 transition flex items-center gap-1.5"
+          className="px-2 py-0.5 rounded-md hover:bg-slate-800 hover:text-emerald-400 transition flex items-center gap-1.5 cursor-pointer"
         >
           <Eye size={12} className={isScanning ? "text-emerald-400" : "text-slate-500"} />
-          <span>SCANNER: {isScanning ? 'ON' : 'OFF'}</span>
+          <span>LASER: {isScanning ? 'ON' : 'OFF'}</span>
         </button>
       </div>
 
       {/* Embedded Scanline Keyframes */}
       <style>{`
         @keyframes laserScan {
-          0% { top: 0%; opacity: 0.8; }
-          50% { top: 96%; opacity: 1; }
-          100% { top: 0%; opacity: 0.8; }
+          0% { top: 0%; opacity: 0.9; }
+          50% { top: 92%; opacity: 1; }
+          100% { top: 0%; opacity: 0.9; }
         }
         @keyframes fadeIn {
           from { opacity: 0; transform: translateZ(30px) translateY(10px); }
-          to { opacity: 1; transform: translateZ(60px) translateY(0); }
+          to { opacity: 1; transform: translateZ(70px) translateY(0); }
         }
       `}</style>
     </div>
   );
 }
-
