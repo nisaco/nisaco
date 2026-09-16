@@ -88,3 +88,4 @@ for (let i = 0; i < data.length; i += 4) {
 const buffer = PNG.sync.write(png);
 fs.writeFileSync('public/profile_cutout.png', buffer);
 console.log('Successfully generated 100% transparent public/profile_cutout.png!');
+

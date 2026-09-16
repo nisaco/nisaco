@@ -63,3 +63,4 @@ function createChunk(type, data) {
   chunk.writeUInt32BE(crc, 8 + len);
   return chunk;
 }
+

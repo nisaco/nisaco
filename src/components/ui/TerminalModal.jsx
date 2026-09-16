@@ -63,11 +63,13 @@ export default function TerminalModal({ isOpen, onClose, onPlaySound }) {
         newHistory.push({
           type: 'output',
           text: `FEATURED ARCHITECTURE:
-  1. AJEnterprise - Automated Telecom/Data Reselling Platform (Paystack/Node/React)
+  1. Fimara.xyz - Next-Gen Fintech & Digital Wallet Platform
+     ↳ URL: https://fimara.xyz
+  2. LinkupGH.live - Ghana's Premier Social, Event & Nightlife Community Platform
+     ↳ URL: https://linkupgh.live
+  3. AJEnterprise - Automated Telecom/Data Reselling Ecosystem (Paystack/Node/React)
      ↳ URL: https://ajenterprise-datastore.onrender.com
-  2. Logistics Hub - Corporate Shipment Tracking & Instant Quotation Engine
-     ↳ URL: https://j3cube-data.onrender.com
-  3. EduTrack - Tertiary Campus Shuttle Real-time GPS & SMS Alert System
+  4. EduTrack - Tertiary Campus Shuttle Real-time GPS & SMS Alert System
      ↳ URL: https://ucc-shuttle-live-2h1i.onrender.com`
         });
         break;

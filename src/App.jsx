@@ -163,26 +163,49 @@ export default function App() {
 
   const projects = [
     {
+      title: "Fimara.xyz",
+      category: "Next-Gen Fintech Platform",
+      badge: "FINTECH APP",
+      desc: "A high-security African fintech platform built for frictionless digital wallet transfers, peer-to-peer payments, automated merchant settlements, and real-time transaction telemetry.",
+      tech: ["React.js", "Node.js", "Fintech APIs", "MongoDB", "Express", "Tailwind CSS"],
+      link: "https://fimara.xyz",
+      github: "https://github.com/nisaco",
+      glowColor: "rgba(6, 182, 212, 0.6)",
+      accentColor: "#06b6d4",
+      metrics: "Digital Wallet Transfers • Instant API Settlements",
+      logoType: "fimara",
+      logoInitials: "FM",
+      logoSub: "FINTECH"
+    },
+    {
+      title: "LinkupGH.live",
+      category: "Events & Social Networking",
+      badge: "LIVE COMMUNITY",
+      desc: "Ghana's premier nightlife, campus events, and social connectivity platform. Features real-time event discovery, interactive venue guides, RSVP automation, and instant community broadcasts.",
+      tech: ["React.js", "Node.js", "Tailwind CSS", "MongoDB", "Express", "Geolocation"],
+      link: "https://linkupgh.live",
+      github: "https://github.com/nisaco",
+      glowColor: "rgba(245, 158, 11, 0.6)",
+      accentColor: "#f59e0b",
+      metrics: "Live Event Discovery • Community Social Hub",
+      logoType: "linkupgh",
+      logoInitials: "LGH",
+      logoSub: "CONNECT"
+    },
+    {
       title: "AJEnterprise",
-      category: "Fintech & Telecom Platform",
+      category: "Fintech & Telecom Ecosystem",
       badge: "LIVE PRODUCTION",
-      desc: "A fully automated telecom data & airtime reselling platform. Features a multi-tiered reseller system, real-time automated wallet funding via Paystack, transaction ledgers, and an executive admin analytics dashboard.",
+      desc: "A fully automated telecom data & airtime reselling ecosystem. Features a multi-tiered reseller network, real-time automated wallet funding via Paystack, transaction ledgers, and admin analytics.",
       tech: ["React.js", "Node.js", "MongoDB Atlas", "Paystack API", "Express"],
       link: "https://ajenterprise-datastore.onrender.com",
       github: "https://github.com/nisaco",
-      glowColor: "rgba(16, 185, 129, 0.5)",
-      metrics: "Thousands in processed volume • 100% Automated"
-    },
-    {
-      title: "Corporate Logistics Hub",
-      category: "Enterprise Business Platform",
-      badge: "ACTIVE CLIENT",
-      desc: "A corporate digital presence for an international logistics provider. Includes real-time shipment status tracking, instant quotation calculators, service request automation, and dynamic CMS news feeds.",
-      tech: ["React", "Node.js", "Tailwind CSS", "REST API"],
-      link: "https://j3cube-data.onrender.com",
-      github: "https://github.com/nisaco",
-      glowColor: "rgba(6, 182, 212, 0.5)",
-      metrics: "Live shipment tracker • Interactive quotation engine"
+      glowColor: "rgba(16, 185, 129, 0.6)",
+      accentColor: "#10b981",
+      metrics: "Thousands Processed • 100% Automated",
+      logoType: "ajenterprise",
+      logoInitials: "AJE",
+      logoSub: "DATASTORE"
     },
     {
       title: "EduTrack Campus System",
@@ -192,8 +215,12 @@ export default function App() {
       tech: ["React.js", "Google Maps API", "MongoDB", "Twilio SMS", "Node.js"],
       link: "https://ucc-shuttle-live-2h1i.onrender.com",
       github: "https://github.com/nisaco",
-      glowColor: "rgba(168, 85, 247, 0.5)",
-      metrics: "Live GPS mapping • SMS arrival notifications"
+      glowColor: "rgba(168, 85, 247, 0.6)",
+      accentColor: "#a855f7",
+      metrics: "Live GPS mapping • SMS arrival notifications",
+      logoType: "edutrack",
+      logoInitials: "ET",
+      logoSub: "MOBILITY"
     }
   ];
 
@@ -635,24 +662,43 @@ export default function App() {
             </a>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 gap-8">
             {projects.map((project, idx) => (
               <TiltCard 
                 key={idx} 
                 isDark={isDark}
                 glowColor={project.glowColor}
                 className={`rounded-3xl border backdrop-blur-2xl flex flex-col justify-between overflow-hidden group transition-all ${
-                  isDark ? 'bg-slate-900/60 border-slate-800 hover:border-emerald-500/50' : 'bg-white/90 border-slate-200 hover:border-blue-500/50'
+                  isDark ? 'bg-slate-900/60 border-slate-800 hover:border-cyan-400/60' : 'bg-white/90 border-slate-200 hover:border-blue-500/50'
                 }`}
               >
                 <div>
-                  {/* Visual Header / Mockup Representation */}
-                  <div className={`h-48 relative overflow-hidden flex items-center justify-center p-6 ${
+                  {/* Visual Header with High-Tech Brand Logo & Mockup */}
+                  <div className={`h-52 relative overflow-hidden flex items-center justify-center p-6 ${
                     isDark ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950' : 'bg-gradient-to-br from-slate-100 to-slate-200'
                   }`}>
-                    {/* Glowing Core Icon */}
-                    <div className="relative z-10 p-5 rounded-2xl bg-slate-950/80 border border-slate-800 shadow-2xl group-hover:scale-110 group-hover:border-cyan-400 transition-all duration-500">
-                      <Code2 size={36} className="text-cyan-400 group-hover:text-emerald-400 transition-colors" />
+                    {/* Glowing Project Brand Logo Emblem */}
+                    <div className="relative z-10 flex flex-col items-center group-hover:scale-110 transition-transform duration-500">
+                      <div 
+                        className="w-20 h-20 rounded-2xl p-1 shadow-2xl flex items-center justify-center transition-all duration-500"
+                        style={{
+                          background: `linear-gradient(135deg, ${project.accentColor} 0%, rgba(15,23,42,0.8) 100%)`,
+                          boxShadow: `0 0 35px ${project.glowColor}`
+                        }}
+                      >
+                        <div className="w-full h-full rounded-[14px] bg-slate-950 flex flex-col items-center justify-center relative overflow-hidden">
+                          <span className="font-mono text-xl font-extrabold tracking-tighter" style={{ color: project.accentColor }}>
+                            {project.logoInitials}
+                          </span>
+                          <span className="text-[8px] font-mono tracking-widest text-slate-400 font-bold">
+                            {project.logoSub}
+                          </span>
+                          <div 
+                            className="absolute -bottom-1 w-8 h-1 rounded-full animate-pulse"
+                            style={{ backgroundColor: project.accentColor }}
+                          />
+                        </div>
+                      </div>
                     </div>
 
                     {/* Scanlines overlay on project card */}
@@ -665,7 +711,14 @@ export default function App() {
 
                     {/* Category & Status Badges */}
                     <div className="absolute top-4 left-4 z-20">
-                      <span className="px-3 py-1 rounded-full text-[10px] font-mono font-bold tracking-wider uppercase border border-emerald-500/40 bg-emerald-500/20 text-emerald-300 shadow-sm">
+                      <span 
+                        className="px-3 py-1 rounded-full text-[10px] font-mono font-bold tracking-wider uppercase border shadow-sm backdrop-blur-md"
+                        style={{
+                          borderColor: `${project.accentColor}60`,
+                          backgroundColor: `${project.accentColor}20`,
+                          color: project.accentColor
+                        }}
+                      >
                         {project.badge}
                       </span>
                     </div>
@@ -676,7 +729,7 @@ export default function App() {
                         target="_blank" 
                         rel="noreferrer"
                         onClick={() => handlePlaySound('click')}
-                        className="p-2 rounded-xl bg-slate-950/80 border border-slate-700 text-slate-300 hover:text-white hover:border-cyan-400 transition"
+                        className="p-2 rounded-xl bg-slate-950/80 border border-slate-700 text-slate-300 hover:text-white hover:border-cyan-400 transition cursor-pointer shadow-md"
                         title="Open Live Application"
                       >
                         <ExternalLink size={14} />
@@ -687,7 +740,7 @@ export default function App() {
                   {/* Body Content */}
                   <div className="p-6 space-y-4">
                     <div>
-                      <div className="font-mono text-xs text-cyan-400 uppercase tracking-wider font-semibold">
+                      <div className="font-mono text-xs uppercase tracking-wider font-semibold" style={{ color: project.accentColor }}>
                         {project.category}
                       </div>
                       <h3 className="text-2xl font-bold mt-1 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-emerald-400 group-hover:to-cyan-400 transition-all">
@@ -695,7 +748,7 @@ export default function App() {
                       </h3>
                     </div>
 
-                    <p className={`text-sm leading-relaxed line-clamp-4 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                    <p className={`text-sm leading-relaxed ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                       {project.desc}
                     </p>
 
@@ -727,7 +780,7 @@ export default function App() {
                     rel="noreferrer"
                     onClick={() => handlePlaySound('click')}
                     onMouseEnter={() => handlePlaySound('hover')}
-                    className="flex-1 py-3 rounded-xl font-mono text-xs font-bold text-slate-950 bg-gradient-to-r from-emerald-400 to-cyan-400 hover:opacity-95 hover:scale-[1.02] active:scale-95 transition-all text-center flex items-center justify-center gap-2 shadow-md shadow-cyan-500/20"
+                    className="flex-1 py-3.5 rounded-xl font-mono text-xs font-bold text-slate-950 bg-gradient-to-r from-emerald-400 to-cyan-400 hover:opacity-95 hover:scale-[1.02] active:scale-95 transition-all text-center flex items-center justify-center gap-2 shadow-md shadow-cyan-500/20 cursor-pointer"
                   >
                     <span>LAUNCH PLATFORM</span>
                     <ExternalLink size={14} />
@@ -739,7 +792,7 @@ export default function App() {
                     rel="noreferrer"
                     onClick={() => handlePlaySound('click')}
                     onMouseEnter={() => handlePlaySound('hover')}
-                    className="px-4 py-3 rounded-xl font-mono text-xs font-bold border border-slate-700 hover:border-cyan-400 hover:text-cyan-300 transition-all flex items-center justify-center"
+                    className="px-4 py-3.5 rounded-xl font-mono text-xs font-bold border border-slate-700 hover:border-cyan-400 hover:text-cyan-300 transition-all flex items-center justify-center cursor-pointer"
                     title="Source Code"
                   >
                     <Github size={16} />

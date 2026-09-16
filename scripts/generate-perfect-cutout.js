@@ -40,3 +40,4 @@ for (let i = 0; i < data.length; i += 4) {
 const buffer = PNG.sync.write(png);
 fs.writeFileSync('public/profile_cutout.png', buffer);
 console.log('100% transparent PNG created at public/profile_cutout.png!');
+
